@@ -8,6 +8,8 @@ class Matrix {
 	double * x;
 public:
 	Matrix(int cols, int rows);
+	double * getX();
+	int getCols();
 };
 
 #endif

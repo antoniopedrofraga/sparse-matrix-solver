@@ -23,3 +23,19 @@ void Ellpack::addElement(int col_index, int row_index, double value) {
 	this->as[col_index][p] = value;
 	this->pointer[col_index]++;
 }
+
+int Ellpack::getmaxnz() {
+	return this->maxnz;
+}
+
+int ** Ellpack::getja() {
+	return this->ja;
+}
+
+int * Ellpack::getpointers() {
+	return this->pointer;
+}
+
+double ** Ellpack::getas() {
+	return this->as;
+}

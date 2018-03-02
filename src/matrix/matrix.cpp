@@ -13,3 +13,11 @@ Matrix::Matrix(int cols, int rows) {
 		this->x[i] = dis(eng);
 	}
 }
+
+double * Matrix::getX() {
+	return this->x;
+}
+
+int Matrix::getCols() {
+	return this->cols;
+}

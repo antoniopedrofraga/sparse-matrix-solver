@@ -13,8 +13,11 @@ int main(int argc, char ** argv) {
 		string path(argv[i]);
 		pair<CSR*, Ellpack*> matrices = io->readFile(path);
 		Solver * solver = new Solver(matrices);
+		
+		solver->sequential();
 		solver->cuda();
 		solver->openMP();
+		
 		cout << "Solved: " << path << endl;
 	}
 }

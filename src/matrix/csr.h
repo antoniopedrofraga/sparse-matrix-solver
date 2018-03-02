@@ -14,6 +14,10 @@ public:
 	CSR(int cols, int rows, int nz);
 	void addPointer(int pointer);
 	void addElement(int col_index, double value);
+	
+	int * getja();
+	double * getas();
+	std::vector<int> getirp();
 };
 
 #endif

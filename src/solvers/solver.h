@@ -7,6 +7,9 @@
 class Solver {
 	CSR * csr;
 	Ellpack * ellpack;
+
+	void sequentialCSR();
+	void sequentialEllpack();
 public:
 	Solver(std::pair<CSR*, Ellpack*> &matrices);
 	void sequential();
