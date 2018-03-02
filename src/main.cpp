@@ -1,5 +1,4 @@
 #include <iostream>
-#include <omp.h>
 #include "matrix/csr.h"
 #include "matrix/ellpack.h"
 #include "solvers/solver.h"
@@ -14,8 +13,8 @@ int main(int argc, char ** argv) {
 		string path(argv[i]);
 		pair<CSR*, Ellpack*> matrices = io->readFile(path);
 		Solver * solver = new Solver(matrices);
-
 		solver->cuda();
 		solver->openMP();
+		cout << "Solved: " << path << endl;
 	}
 }

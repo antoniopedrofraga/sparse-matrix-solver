@@ -43,12 +43,13 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 		std::cout << "Could not get sizes: " << filename << std::endl;
 		exit(1);
 	}
-
+	
 	for (int i = 0; i < nz; i++) {
 		int m, n;
 		double value;
 
 		fscanf(file, "%d %d %lg\n", &m, &n, &value);
+		m--; n--;
 		Element * el = new Element(m, value);
 		
 		auto it = occurences.find(n);

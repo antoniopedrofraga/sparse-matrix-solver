@@ -9,6 +9,7 @@ class Solver {
 	Ellpack * ellpack;
 public:
 	Solver(std::pair<CSR*, Ellpack*> &matrices);
+	void sequential();
 	void cuda();
 	void openMP();
 

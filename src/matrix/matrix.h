@@ -5,6 +5,7 @@
 
 class Matrix {
 	int cols, rows;
+	double * x;
 public:
 	Matrix(int cols, int rows);
 };
