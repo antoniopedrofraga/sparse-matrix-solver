@@ -1,7 +1,8 @@
 #ifndef IO_MANAGER_H
 #define IO_MANAGER_H
 
-#include "../matrix/matrix.h"
+#include "../matrix/csr.h"
+#include "../matrix/ellpack.h"
 #include <string>
 
 using namespace std;
@@ -10,7 +11,7 @@ class IOmanager {
 	string filename;
 public:
 	IOmanager();
-	Matrix * readFile(string filename);
+	std::pair<CSR*, Ellpack*> readFile(string filename);
 };
 
 #endif

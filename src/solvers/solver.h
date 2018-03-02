@@ -1,12 +1,14 @@
 #ifndef SOLVER_H
 #define SOLVER_H
 
-#include "../matrix/matrix.h"
+#include "../matrix/csr.h"
+#include "../matrix/ellpack.h"
 
 class Solver {
-	Matrix * matrix;
+	CSR * csr;
+	Ellpack * ellpack;
 public:
-	Solver(Matrix * matrix);
+	Solver(std::pair<CSR*, Ellpack*> &matrices);
 	void cuda();
 	void openMP();
 

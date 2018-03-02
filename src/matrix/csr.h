@@ -8,8 +8,12 @@ class CSR: public Matrix {
 	std::vector<int> irp;
 	int nz, * ja;
 	double * as;
+	
+	int element_index; 
 public:
-	CSR(int cols, int rows, int nz);		
+	CSR(int cols, int rows, int nz);
+	void addPointer(int pointer);
+	void addElement(int col_index, double value);
 };
 
 #endif

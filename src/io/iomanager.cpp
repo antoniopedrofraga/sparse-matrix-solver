@@ -1,20 +1,28 @@
 #include "iomanager.h"
 #include "mmio.h"
 #include "element.h"
+#include "../matrix/csr.h"
+#include "../matrix/ellpack.h"
+
 #include <iostream>
 #include <algorithm>
 #include <stdlib.h>
-#include <unordered_map>
+#include <map>
 #include <set>
 
 IOmanager::IOmanager() {}
 
-Matrix * IOmanager::readFile(string filename) {
+std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 	FILE * file;
 	MM_typecode matcode;
+	
+	CSR * csr; 
+	Ellpack * ellpack;
+	
 	int M, N, nz; 
-	unordered_map<int, set<Element*>> occurences;
+	map<int, set<Element*>> occurences;
 	size_t max_nz = 0;
+	size_t pointer = 0;
 
 	if ((file = fopen(filename.c_str(), "r")) == NULL) { 
 		std::cout << "Could not open file: " << filename << std::endl;
@@ -53,7 +61,22 @@ Matrix * IOmanager::readFile(string filename) {
 			occurences.insert({n, {el}});
 		}
 	}
-
-	Matrix * m = new Matrix(N, M);	
-	return m;
+	
+	csr = new CSR(N, M, nz);
+	ellpack = new Ellpack(N, M, max_nz);	
+	
+	for (auto map_it = occurences.begin(); map_it != occurences.end(); map_it++) {
+		int col_index = map_it->first;
+		set<Element *> elements = map_it->second;
+		csr->addPointer(pointer);
+		for (auto set_it = elements.begin(); set_it != elements.end(); set_it++) {
+			double value = (*set_it)->getValue();
+			int row_index = (*set_it)->getRow();
+			csr->addElement(col_index, value);
+			ellpack->addElement(col_index, row_index, value);
+			pointer++;
+		}
+	}
+	
+	return make_pair(csr, ellpack);
 }
