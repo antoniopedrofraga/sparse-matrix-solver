@@ -10,6 +10,8 @@ class Solver {
 
 	void sequentialCSR();
 	void sequentialEllpack();
+	void openmpCSR();
+	void openmpEllpack();
 public:
 	Solver(std::pair<CSR*, Ellpack*> &matrices);
 	void sequential();
