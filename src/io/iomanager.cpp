@@ -9,8 +9,17 @@
 #include <stdlib.h>
 #include <map>
 #include <set>
+#include <string>
 
 IOmanager::IOmanager() {}
+
+std::string IOmanager::parseArguments(int argc, char ** argv) {
+	if (argc != 2) {
+		std::cout << "Wrong usage of arguments, one should use: solver <path>" << std::endl;
+		exit(1);
+	}
+	return string(argv[1]);
+}
 
 std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 	FILE * file;

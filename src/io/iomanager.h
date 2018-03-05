@@ -11,6 +11,7 @@ class IOmanager {
 	string filename;
 public:
 	IOmanager();
+	std::string parseArguments(int argc, char ** argv);
 	std::pair<CSR*, Ellpack*> readFile(string filename);
 };
 
