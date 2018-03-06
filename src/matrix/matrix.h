@@ -5,8 +5,8 @@
 
 class Matrix {
 	int cols, rows;
-	double * x;
 public:
+	double * x, * y;
 	Matrix(int cols, int rows);
 	double * getX();
 	int getCols();

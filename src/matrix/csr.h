@@ -5,19 +5,19 @@
 #include <vector>
 
 class CSR: public Matrix {
-	std::vector<int> irp;
-	int nz, * ja;
-	double * as;
-	
 	int element_index; 
 public:
+	size_t irp_size;
+	int nz, * ja, * irp;
+	double * as;
+
 	CSR(int cols, int rows, int nz);
 	void addPointer(int pointer);
 	void addElement(int col_index, double value);
 	
 	int * getja();
 	double * getas();
-	std::vector<int> getirp();
+	int * getirp();
 };
 
 #endif

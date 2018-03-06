@@ -4,14 +4,18 @@ CSR::CSR(int cols, int rows, int nz) : Matrix(cols, rows) {
 	this->nz = nz;
 	this->ja = new int[nz];
 	this->as = new double[nz];
+	this->irp = new int[cols];
 	this->element_index = 0;
+	
+	this->irp_size = 0;
 
 	std::fill(&this->ja[0], &this->ja[nz], 0);
 	std::fill(&this->as[0], &this->as[nz], 0.0);
 };
 
 void CSR::addPointer(int pointer) {
-	this->irp.push_back(pointer);
+	this->irp[this->irp_size] = pointer;
+	this->irp_size++;
 }
 
 void CSR::addElement(int col_index, double value) {
@@ -28,6 +32,6 @@ double * CSR::getas() {
 	return this->as;
 }
 
-std::vector<int> CSR::getirp() {
+int * CSR::getirp() {
 	return this->irp;
 }
