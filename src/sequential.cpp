@@ -6,13 +6,14 @@
 #include "io/iomanager.h"
 #include "matrix/matrix.h"
 
-void solveCSR(CSR * csr) {
+void solveCSR(CSR * &csr) {
 	int m = csr->getCols();
 	int * irp = csr->getirp();
 	int * ja = csr->getja();
 	double * as = csr->getas();
 	double * x = csr->getX();
 
+	csr->trackTime();
 	for (int i = 0; i < m; i++) {
 		double t = 0.0;
 		for (size_t k = 0; k < csr->irp_size; k++) {
@@ -21,15 +22,17 @@ void solveCSR(CSR * csr) {
 		}
 		csr->y[i] = t;	
 	}
+	csr->trackTime();
 }
 
-void solveEllpack(Ellpack * ellpack) {
+void solveEllpack(Ellpack * &ellpack) {
 	int m = ellpack->getCols();
 	int maxnz = ellpack->getmaxnz();
 	int ** ja = ellpack->getja();
 	double ** as = ellpack->getas();
 	double * x = ellpack->getX();
 
+	ellpack->trackTime();
 	for (int i = 0; i < m; i++) {
 		double t = 0.0;
 		for (int j = 0; j < maxnz; j++) {
@@ -37,6 +40,7 @@ void solveEllpack(Ellpack * ellpack) {
 		}
 		ellpack->y[i] = t;
 	}
+	ellpack->trackTime();
 }
 
 int main(int argc, char ** argv) {	
@@ -46,6 +50,8 @@ int main(int argc, char ** argv) {
 
 	solveCSR(matrices.first);
 	solveEllpack(matrices.second);
+
+	io->exportResults(sequential, path, matrices.first, matrices.second);
 }
 
 

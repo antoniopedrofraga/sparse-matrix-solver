@@ -1,6 +1,6 @@
 #include "ellpack.h"
 
-Ellpack::Ellpack(int cols, int rows, int maxnz) : Matrix(cols, rows) {
+Ellpack::Ellpack(int cols, int rows, int maxnz) : Matrix(cols, rows, maxnz * cols) {
 	this->maxnz = maxnz;
 	this->ja = new int * [cols];
 	this->pointer = new int[cols];

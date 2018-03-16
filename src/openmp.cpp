@@ -6,8 +6,9 @@
 #include "matrix/ellpack.h"
 #include "io/iomanager.h"
 #include "matrix/matrix.h"
+#include "utils/utils.h"
 
-void openmpCSR(CSR * csr) {
+void openmpCSR(CSR * &csr) {
 	int m = csr->getCols();
 	int * irp = csr->getirp();
 	int * ja = csr->getja();
@@ -16,6 +17,8 @@ void openmpCSR(CSR * csr) {
 	
 	int i, j; size_t k;
 	double t = 0.0;
+
+	csr->trackTime();
 	#pragma omp parallel for private(i, j, k) reduction(+:t)
 	for (i = 0; i < m; i++) {
 		t = 0.0;
@@ -25,9 +28,10 @@ void openmpCSR(CSR * csr) {
 		}
 		csr->y[i] = t;	
 	}
+	csr->trackTime();
 }
 
-void openmpEllpack(Ellpack * ellpack) {
+void openmpEllpack(Ellpack * &ellpack) {
 	int m = ellpack->getCols();
 	int maxnz = ellpack->getmaxnz();
 	int ** ja = ellpack->getja();
@@ -36,6 +40,8 @@ void openmpEllpack(Ellpack * ellpack) {
 
 	int i, j;
 	double t = 0.0;
+
+	ellpack->trackTime();
 	#pragma omp parallel for private(i, j) reduction(+:t)
 	for (i = 0; i < m; i++) {
 		t = 0.0;
@@ -44,6 +50,7 @@ void openmpEllpack(Ellpack * ellpack) {
 		}
 		ellpack->y[i] = t;
 	}
+	ellpack->trackTime();
 }
 
 int main(int argc, char ** argv) {	
@@ -53,6 +60,8 @@ int main(int argc, char ** argv) {
 
 	openmpCSR(matrices.first);
 	openmpEllpack(matrices.second);
+
+	io->exportResults(openmp, path, matrices.first, matrices.second);
 }
 
 

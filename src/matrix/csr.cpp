@@ -1,7 +1,6 @@
 #include "csr.h"
 
-CSR::CSR(int cols, int rows, int nz) : Matrix(cols, rows) {
-	this->nz = nz;
+CSR::CSR(int cols, int rows, int nz) : Matrix(cols, rows, nz) {
 	this->ja = new int[nz];
 	this->as = new double[nz];
 	this->irp = new int[cols];

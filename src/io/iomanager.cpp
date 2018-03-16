@@ -3,6 +3,7 @@
 #include "element.h"
 #include "../matrix/csr.h"
 #include "../matrix/ellpack.h"
+#include "iomanager.h"
 
 #include <iostream>
 #include <algorithm>
@@ -10,7 +11,7 @@
 #include <map>
 #include <set>
 #include <string>
-
+#include <regex>
 IOmanager::IOmanager() {}
 
 std::string IOmanager::parseArguments(int argc, char ** argv) {
@@ -40,7 +41,7 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 	
 	if (mm_read_banner(file, &matcode) != 0) {
 		std::cout << "Could not process Matrix Market banner: " << filename << std::endl;
-	       	exit(1);	
+		exit(1);	
 	}
 
 	if (!mm_is_sparse(matcode)) {
@@ -90,3 +91,29 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 	
 	return make_pair(csr, ellpack);
 }
+
+std::string IOmanager::extractName(std::string path) {
+	std::regex reg("[A-Za-z_0-9]+.mtx");
+	std::smatch match;
+	if (std::regex_search(path, match, reg) && match.size() == 1) {
+		std::string name = match[0]; 
+		return name.substr(0, name.length() - 4);
+	} else {
+		std::cout << "Couldn't find a proper matrix name for " << path << std::endl;
+		return path;
+	}
+}
+
+void IOmanager::exportResults(std::string output_file, std::string path, CSR * csr, Ellpack * ellpack) {
+	std::ofstream out; std::string name;
+	out.open(output_file, std::ios::out | std::ios_base::app);
+
+	if (out.fail()) {
+		std::cout << "Could not open Sequential output file to export results" << std::endl; 
+		return;
+	}
+
+	name = extractName(path);
+	out << name << ", " << csr->getFlops() << ", " << ellpack->getFlops() << "," << std::endl;
+}
+

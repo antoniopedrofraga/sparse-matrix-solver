@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <iostream>
 
+#include "matrix/matrix.h"
 #include "matrix/csr.h"
 #include "matrix/ellpack.h"
 #include "io/iomanager.h"
-#include "matrix/matrix.h"
+#include "utils/utils.h"
  
 __global__ void solveCSR(CSR * csr) {
 	int i = threadIdx.x;
@@ -25,7 +26,7 @@ __global__ void solveEllpack(Ellpack * ellpack) {
 	ellpack->y[i] = t;
 }
 
-void solveCuda(CSR * csr, Ellpack * ellpack) {
+void solveCuda(IOmanager * io, std::string path, CSR * &csr, Ellpack * &ellpack) {
 	
 	const int m = csr->getCols();
 	const int csize = sizeof(CSR);
@@ -39,35 +40,20 @@ void solveCuda(CSR * csr, Ellpack * ellpack) {
 	cudaMemcpy(csr_c, csr, csize, cudaMemcpyHostToDevice); 
 	cudaMemcpy(ellpack_c, ellpack, esize, cudaMemcpyHostToDevice); 
 	
+	csr->trackTime();
 	solveCSR<<<1, m>>>(csr_c);
+	cudaThreadSynchronize();
+	csr->trackTime();
+
+	ellpack->trackTime();
 	solveEllpack<<<1, m>>>(ellpack_c);
+	cudaThreadSynchronize();
+	ellpack->trackTime();
 	
 	cudaMemcpy(csr, csr_c, csize, cudaMemcpyDeviceToHost); 
 	cudaMemcpy(ellpack, ellpack_c, esize, cudaMemcpyDeviceToHost); 
 	cudaFree(csr_c);
 	cudaFree(ellpack_c);
 
-	/*char a[N] = "Hello \0\0\0\0\0\0";
-	int b[N] = {15, 10, 6, 0, -11, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
- 
-	char *ad;
-	int *bd;
-	const int csize = N * sizeof(char);
-	const int isize = N * sizeof(int);
- 
-	printf("%s", a);
- 
-	cudaMalloc((void**)&ad, csize); 
-	cudaMalloc((void**)&bd, isize); 
-	cudaMemcpy(ad, a, csize, cudaMemcpyHostToDevice); 
-	cudaMemcpy(bd, b, isize, cudaMemcpyHostToDevice); 
-  
-	dim3 dimGrid(25, 25);
-	dim3 dimBlock(10, 10);
-	hello<<<dimGrid, dimBlock>>>(ad, bd);
-	cudaMemcpy(a, ad, csize, cudaMemcpyDeviceToHost); 
-	cudaFree(ad);
-	cudaFree(bd);
-
-	std::cout << a << std::endl;*/
+	io->exportResults(cuda, path, csr, ellpack);
 }

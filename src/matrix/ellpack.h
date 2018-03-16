@@ -11,7 +11,6 @@ public:
 	Ellpack(int cols, int rows, int maxnz);
 	void addElement(int col_index, int row_index, double value);
 
-
 	int getmaxnz();
 	int ** getja();
 	int * getpointers();
