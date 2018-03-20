@@ -2,21 +2,25 @@
 #define MATRIX_H
 
 #include <algorithm>
-#include <chrono>
+#include <omp.h>
+#include "../utils/utils.h"
 
 class Matrix {
-	int cols, rows, flops, nz;
-	std::chrono::high_resolution_clock::time_point start, done;
+	int cols, rows, nz;
+	long long mflops;
+	double start, done;
 	double elapsed_time, measures;
 	bool measuring;
 public:
 	double * x, * y;
 	Matrix(int cols, int rows, int nz);
 	double * getX();
-	int getFlops();
+	long long getMegaFlops();
 	int getnz();
 	int getCols();
+	void printElapsedTime();
 	void trackTime();
+	void addElapsedTime(float elapsed_time);
 };
 
 #endif

@@ -13,15 +13,17 @@ void solveCSR(CSR * &csr) {
 	double * as = csr->getas();
 	double * x = csr->getX();
 
-	csr->trackTime();
-	for (int i = 0; i < m; i++) {
-		double t = 0.0;
-		for (int j = irp[i]; j < irp[i + 1] - 1; j++) {
-			t += as[j] * x[ja[j]];
+	for (int k = 0; k < NR_RUNS; ++k) {
+		csr->trackTime();
+		for (int i = 0; i < m; i++) {
+			double t = 0.0;
+			for (int j = irp[i]; j < irp[i + 1] - 1; j++) {
+				t += as[j] * x[ja[j]];
+			}
+			csr->y[i] = t;	
 		}
-		csr->y[i] = t;	
+		csr->trackTime();
 	}
-	csr->trackTime();
 }
 
 void solveEllpack(Ellpack * &ellpack) {
@@ -31,15 +33,17 @@ void solveEllpack(Ellpack * &ellpack) {
 	double ** as = ellpack->getas();
 	double * x = ellpack->getX();
 
-	ellpack->trackTime();
-	for (int i = 0; i < m; i++) {
-		double t = 0.0;
-		for (int j = 0; j < maxnz; j++) {
-			t += as[i][j] * x[ja[i][j]];
+	for (int k = 0; k < NR_RUNS; ++k) {
+		ellpack->trackTime();
+		for (int i = 0; i < m; i++) {
+			double t = 0.0;
+			for (int j = 0; j < maxnz; j++) {
+				t += as[i][j] * x[ja[i][j]];
+			}
+			ellpack->y[i] = t;
 		}
-		ellpack->y[i] = t;
+		ellpack->trackTime();
 	}
-	ellpack->trackTime();
 }
 
 int main(int argc, char ** argv) {	
@@ -50,7 +54,7 @@ int main(int argc, char ** argv) {
 	solveCSR(matrices.first);
 	solveEllpack(matrices.second);
 
-	io->exportResults(sequential, path, matrices.first, matrices.second);
+	io->exportResults(SEQUENTIAL, path, matrices.first, matrices.second);
 }
 
 

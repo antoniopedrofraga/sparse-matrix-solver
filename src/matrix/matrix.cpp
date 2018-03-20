@@ -14,8 +14,6 @@ Matrix::Matrix(int cols, int rows, int nz) {
 	this->measuring = false;
 
 	this->elapsed_time = 0.0;
-	
-	this->flops = -1;
 
 	srand(time(NULL));
 
@@ -38,21 +36,29 @@ int Matrix::getCols() {
 	return this->cols;
 }
 
-int Matrix::getFlops() {
-	return this->flops;
+long long Matrix::getMegaFlops() {
+	return 2.0 * (double)this->nz / (this->elapsed_time / (double)this->measures) / 1000;
+}
+
+void Matrix::printElapsedTime() {
+	std::cout << " (" << (this->elapsed_time / (double)this->measures) << " ms) ";
 }
 
 void Matrix::trackTime() {
-	if (this->measuring == false) {
-		this->start = std::chrono::high_resolution_clock::now();
-		this->measuring = true;
-	} else {
-		this->done = std::chrono::high_resolution_clock::now();
-		this->elapsed_time += std::chrono::duration_cast<std::chrono::milliseconds>(done - start).count();
-		this->measures++;
-		this->flops = this->elapsed_time == 0 ? 0 : 2.0 * (double)this->nz / (this->elapsed_time / (double)this->measures);
-		this->measuring = false;
+	#if defined(_OPENMP)
+		if (this->measuring == false) {
+			this->start = omp_get_wtime() * 1000;
+			this->measuring = true;
+		} else {
+			this->done = omp_get_wtime() * 1000;
+			this->elapsed_time += done - start;
+			this->measures++;
+			this->measuring = false;
+		}
+	#endif
+}
 
-		std::cout << " (" << this->elapsed_time << " ms) ";
-	}
+void Matrix::addElapsedTime(float elapsed_time) {
+	this->measures++;
+	this->elapsed_time += elapsed_time;
 }

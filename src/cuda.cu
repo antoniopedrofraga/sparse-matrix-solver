@@ -33,26 +33,37 @@ void solveCuda(IOmanager * io, std::string path, CSR * &csr, Ellpack * &ellpack)
 	
 	CSR * csr_c;
 	Ellpack * ellpack_c;
+	float elapsedtime = 0.0;
+
+	cudaEvent_t start, stop;
+	cudaEventCreate(&start);
+	cudaEventCreate(&stop);
 
 	cudaMalloc((void**)&csr_c, csize);
 	cudaMalloc((void**)&ellpack_c, esize);
 	cudaMemcpy(csr_c, csr, csize, cudaMemcpyHostToDevice); 
 	cudaMemcpy(ellpack_c, ellpack, esize, cudaMemcpyHostToDevice); 
 	
-	csr->trackTime();
-	solveCSR<<<1, m>>>(csr_c);
-	cudaThreadSynchronize();
-	csr->trackTime();
+	for (int k = 0; k < NR_RUNS; ++k) {
+		cudaEventRecord(start);
+		solveCSR<<<1, m>>>(csr_c);
+		cudaThreadSynchronize();
+		cudaEventRecord(stop);
+		cudaEventSynchronize(stop);
+		cudaEventElapsedTime(&elapsedtime, start, stop);
+		csr->addElapsedTime(elapsedtime);
 
-	ellpack->trackTime();
-	solveEllpack<<<1, m>>>(ellpack_c);
-	cudaThreadSynchronize();
-	ellpack->trackTime();
+		cudaEventRecord(start);
+		solveEllpack<<<1, m>>>(ellpack_c);
+		cudaThreadSynchronize();
+		cudaEventRecord(stop);
+		cudaEventSynchronize(stop);
+		cudaEventElapsedTime(&elapsedtime, start, stop);
+		ellpack->addElapsedTime(elapsedtime);
+	}
 	
-	cudaMemcpy(csr, csr_c, csize, cudaMemcpyDeviceToHost); 
-	cudaMemcpy(ellpack, ellpack_c, esize, cudaMemcpyDeviceToHost); 
+	io->exportResults(CUDA, path, csr, ellpack);
+
 	cudaFree(csr_c);
 	cudaFree(ellpack_c);
-
-	io->exportResults(cuda, path, csr, ellpack);
 }

@@ -113,7 +113,10 @@ void IOmanager::exportResults(std::string output_file, std::string path, CSR * c
 		return;
 	}
 
+	csr->printElapsedTime();
+	ellpack->printElapsedTime();
+	
 	name = extractName(path);
-	out << name << ", " << csr->getFlops() << ", " << ellpack->getFlops() << "," << std::endl;
+	out << name << ", " << csr->getMegaFlops() << ", " << ellpack->getMegaFlops() << "," << std::endl;
 }
 

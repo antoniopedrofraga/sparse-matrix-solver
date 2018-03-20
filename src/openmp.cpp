@@ -16,18 +16,19 @@ void openmpCSR(CSR * &csr) {
 	double * x = csr->getX();
 	
 	int i;
-	double t = 0.0;
 
-	csr->trackTime();
-	#pragma omp parallel for private(i) reduction(+:t)
-	for (i = 0; i < m; i++) {
-		t = 0.0;
-		for (int j = irp[i]; j < irp[i + 1] - 1; j++) {
-			t += as[j] * x[ja[j]];
+	for (int k = 0; k < NR_RUNS; ++k) {
+		csr->trackTime();
+		#pragma omp parallel for private(i) schedule(dynamic) shared(csr, as, x, ja, irp) num_threads(4)
+		for (i = 0; i < m; i++) {
+			double t = 0.0;
+			for (int j = irp[i]; j < irp[i + 1]; j++) {
+				t += as[j] * x[ja[j]];
+			}
+			csr->y[i] = t;
 		}
-		csr->y[i] = t;
+		csr->trackTime();
 	}
-	csr->trackTime();
 }
 
 void openmpEllpack(Ellpack * &ellpack) {
@@ -38,18 +39,19 @@ void openmpEllpack(Ellpack * &ellpack) {
 	double * x = ellpack->getX();
 
 	int i;
-	double t = 0.0;
 
-	ellpack->trackTime();
-	#pragma omp parallel for private(i) reduction(+:t)
-	for (i = 0; i < m; i++) {
-		t = 0.0;
-		for (int j = 0; j < maxnz; j++) {
-			t += as[i][j] * x[ja[i][j]];
+	for (int k = 0; k < NR_RUNS; ++k) {
+		ellpack->trackTime();
+		#pragma omp parallel for private(i) schedule(dynamic) shared(ellpack, as, x, ja, maxnz) num_threads(4)
+		for (i = 0; i < m; i++) {
+			double t = 0.0;
+			for (int j = 0; j < maxnz; j++) {
+				t += as[i][j] * x[ja[i][j]];
+			}
+			ellpack->y[i] = t;
 		}
-		ellpack->y[i] = t;
+		ellpack->trackTime();
 	}
-	ellpack->trackTime();
 }
 
 int main(int argc, char ** argv) {	
@@ -60,7 +62,7 @@ int main(int argc, char ** argv) {
 	openmpCSR(matrices.first);
 	openmpEllpack(matrices.second);
 
-	io->exportResults(openmp, path, matrices.first, matrices.second);
+	io->exportResults(OPENMP, path, matrices.first, matrices.second);
 }
 
 

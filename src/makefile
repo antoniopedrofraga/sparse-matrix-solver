@@ -1,7 +1,7 @@
 all: sequential openmp cuda
 
 sequential:
-	g++ -Wall -std=c++14 sequential.cpp */*.cpp -o ../bin/sequential
+	g++ -Wall -fopenmp -std=c++14 sequential.cpp */*.cpp -o ../bin/sequential
 openmp:
 	g++ -Wall -fopenmp -lpthread -std=c++14 openmp.cpp */*.cpp -o ../bin/openmp
 cuda: cuda.o
