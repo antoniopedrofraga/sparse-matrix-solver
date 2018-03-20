@@ -1,6 +1,7 @@
 #include "matrix.h"
 #include <time.h>
 #include <iostream>
+#include <chrono>
 
 Matrix::Matrix(int cols, int rows, int nz) {
 	this->nz = nz;
@@ -12,8 +13,7 @@ Matrix::Matrix(int cols, int rows, int nz) {
 	this->measures = 0;
 	this->measuring = false;
 
-	this->start = 0;
-	this->elapsed_time = 0;
+	this->elapsed_time = 0.0;
 	
 	this->flops = -1;
 
@@ -43,15 +43,16 @@ int Matrix::getFlops() {
 }
 
 void Matrix::trackTime() {
-	if (!this->measuring) {
-		this->start = clock();
+	if (this->measuring == false) {
+		this->start = std::chrono::high_resolution_clock::now();
 		this->measuring = true;
 	} else {
+		this->done = std::chrono::high_resolution_clock::now();
+		this->elapsed_time += std::chrono::duration_cast<std::chrono::milliseconds>(done - start).count();
 		this->measures++;
-		this->elapsed_time += (clock() - this->start) / CLOCKS_PER_SEC;
-		this->flops = this->elapsed_time == 0 ? 0 : 2.0 * (double)this->nz / (this->elapsed_time / this->measures);
+		this->flops = this->elapsed_time == 0 ? 0 : 2.0 * (double)this->nz / (this->elapsed_time / (double)this->measures);
 		this->measuring = false;
 
-		std::cout << " (" << this->elapsed_time << " seconds) ";
+		std::cout << " (" << this->elapsed_time << " ms) ";
 	}
 }

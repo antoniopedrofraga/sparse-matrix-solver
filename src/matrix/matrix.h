@@ -2,10 +2,11 @@
 #define MATRIX_H
 
 #include <algorithm>
+#include <chrono>
 
 class Matrix {
 	int cols, rows, flops, nz;
-	clock_t start;
+	std::chrono::high_resolution_clock::time_point start, done;
 	double elapsed_time, measures;
 	bool measuring;
 public:

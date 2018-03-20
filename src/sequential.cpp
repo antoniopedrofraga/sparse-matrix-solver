@@ -16,8 +16,7 @@ void solveCSR(CSR * &csr) {
 	csr->trackTime();
 	for (int i = 0; i < m; i++) {
 		double t = 0.0;
-		for (size_t k = 0; k < csr->irp_size; k++) {
-			int j = irp[k];
+		for (int j = irp[i]; j < irp[i + 1] - 1; j++) {
 			t += as[j] * x[ja[j]];
 		}
 		csr->y[i] = t;	

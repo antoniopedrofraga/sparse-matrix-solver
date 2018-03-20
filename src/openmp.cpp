@@ -15,18 +15,17 @@ void openmpCSR(CSR * &csr) {
 	double * as = csr->getas();
 	double * x = csr->getX();
 	
-	int i, j; size_t k;
+	int i;
 	double t = 0.0;
 
 	csr->trackTime();
-	#pragma omp parallel for private(i, j, k) reduction(+:t)
+	#pragma omp parallel for private(i) reduction(+:t)
 	for (i = 0; i < m; i++) {
 		t = 0.0;
-		for (k = 0; k < csr->irp_size; k++) {
-			j = irp[k];
+		for (int j = irp[i]; j < irp[i + 1] - 1; j++) {
 			t += as[j] * x[ja[j]];
 		}
-		csr->y[i] = t;	
+		csr->y[i] = t;
 	}
 	csr->trackTime();
 }
@@ -38,14 +37,14 @@ void openmpEllpack(Ellpack * &ellpack) {
 	double ** as = ellpack->getas();
 	double * x = ellpack->getX();
 
-	int i, j;
+	int i;
 	double t = 0.0;
 
 	ellpack->trackTime();
-	#pragma omp parallel for private(i, j) reduction(+:t)
+	#pragma omp parallel for private(i) reduction(+:t)
 	for (i = 0; i < m; i++) {
 		t = 0.0;
-		for (j = 0; j < maxnz; j++) {
+		for (int j = 0; j < maxnz; j++) {
 			t += as[i][j] * x[ja[i][j]];
 		}
 		ellpack->y[i] = t;
