@@ -2,7 +2,7 @@
 #define UTILS_H
 #include <string>
 
-const std::string OUTPUTS = "../outputs/";
+const std::string OUTPUTS = "outputs/";
 
 const std::string SEQUENTIAL = OUTPUTS + "sequential.csv";
 const std::string OPENMP = OUTPUTS + "openmp.csv";
