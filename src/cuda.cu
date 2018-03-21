@@ -29,11 +29,6 @@ void solveCuda(IOmanager * io, std::string path, CSR * &csr, Ellpack * &ellpack)
 	
 	CSR * csr_c;
 	Ellpack * ellpack_c;
-	float elapsedtime = 0.0;
-
-	cudaEvent_t start, stop;
-	cudaEventCreate(&start);
-	cudaEventCreate(&stop);
 
 	cudaMalloc((void**)&csr_c, csize);
 	cudaMalloc((void**)&ellpack_c, esize);
@@ -41,21 +36,15 @@ void solveCuda(IOmanager * io, std::string path, CSR * &csr, Ellpack * &ellpack)
 	cudaMemcpy(ellpack_c, ellpack, esize, cudaMemcpyHostToDevice); 
 	
 	for (int k = 0; k < NR_RUNS; ++k) {
-		cudaEventRecord(start);
+		csr->trackTime();
 		solveCSR<<<1, m>>>(csr_c);
 		cudaThreadSynchronize();
-		cudaEventRecord(stop);
-		cudaEventSynchronize(stop);
-		cudaEventElapsedTime(&elapsedtime, start, stop);
-		csr->addElapsedTime(elapsedtime);
+		csr->trackTime();
 		
-		cudaEventRecord(start);
+		ellpack->trackTime();
 		solveEllpack<<<1, m>>>(ellpack_c);
 		cudaThreadSynchronize();
-		cudaEventRecord(stop);
-		cudaEventSynchronize(stop);
-		cudaEventElapsedTime(&elapsedtime, start, stop);
-		ellpack->addElapsedTime(elapsedtime);
+		ellpack->trackTime();
 	}
 	
 	io->exportResults(CUDA, path, csr, ellpack);
