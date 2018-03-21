@@ -17,17 +17,15 @@ void openmpCSR(CSR * &csr) {
 	
 	int i;
 
-	for (int k = 0; k < NR_RUNS; ++k) {
-		csr->trackTime();
-		#pragma omp parallel for private(i) schedule(dynamic) shared(csr, as, x, ja, irp) num_threads(16)
-		for (i = 0; i < m; i++) {
-			double t = 0.0;
-			for (int j = irp[i]; j < irp[i + 1]; j++) {
-				t += as[j] * x[ja[j]];
+	for (int k = 0; k < NR_RUNS + 1; ++k) {
+		if (k != 0) csr->trackTime();
+		#pragma omp parallel for private(i) schedule(static) num_threads(4)
+		for (i = 0; i < m; ++i) {
+			for (int j = irp[i]; j < irp[i + 1]; ++j) {
+				csr->y[i] += as[j] * x[ja[j]];
 			}
-			csr->y[i] = t;
 		}
-		csr->trackTime();
+		if (k != 0) csr->trackTime();
 	}
 }
 
@@ -39,18 +37,15 @@ void openmpEllpack(Ellpack * &ellpack) {
 	double * x = ellpack->getX();
 
 	int i;
-
-	for (int k = 0; k < NR_RUNS; ++k) {
-		ellpack->trackTime();
-		#pragma omp parallel for private(i) schedule(dynamic) shared(ellpack, as, x, ja, maxnz) num_threads(16)
-		for (i = 0; i < m; i++) {
-			double t = 0.0;
-			for (int j = 0; j < maxnz; j++) {
-				t += as[i][j] * x[ja[i][j]];
+	for (int k = 0; k < NR_RUNS + 1; ++k) {
+		if (k != 0) ellpack->trackTime();
+		#pragma omp parallel for private(i) schedule(static) num_threads(4)
+		for (i = 0; i < m; ++i) {
+			for (int j = 0; j < maxnz; ++j) {
+				ellpack->y[i] += as[i][j] * x[ja[i][j]];
 			}
-			ellpack->y[i] = t;
 		}
-		ellpack->trackTime();
+		if (k != 0) ellpack->trackTime();
 	}
 }
 

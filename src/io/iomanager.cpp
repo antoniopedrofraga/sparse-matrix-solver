@@ -58,7 +58,11 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 		int m, n;
 		double value;
 
-		fscanf(file, "%d %d %lg\n", &m, &n, &value);
+		if (fscanf(file, "%d %d %lg\n", &m, &n, &value) < 0) {
+			std::cout <<  "Error reading from file " << filename << ", exiting..." << std::endl;
+            exit(1);
+		}
+
 		m--; n--;
 		Element * el = new Element(m, value);
 		

@@ -15,12 +15,10 @@ void solveCSR(CSR * &csr) {
 
 	for (int k = 0; k < NR_RUNS; ++k) {
 		csr->trackTime();
-		for (int i = 0; i < m; i++) {
-			double t = 0.0;
-			for (int j = irp[i]; j < irp[i + 1] - 1; j++) {
-				t += as[j] * x[ja[j]];
+		for (int i = 0; i < m; ++i) {
+			for (int j = irp[i]; j < irp[i + 1]; ++j) {
+				csr->y[i] += as[j] * x[ja[j]];
 			}
-			csr->y[i] = t;	
 		}
 		csr->trackTime();
 	}
@@ -35,12 +33,10 @@ void solveEllpack(Ellpack * &ellpack) {
 
 	for (int k = 0; k < NR_RUNS; ++k) {
 		ellpack->trackTime();
-		for (int i = 0; i < m; i++) {
-			double t = 0.0;
-			for (int j = 0; j < maxnz; j++) {
-				t += as[i][j] * x[ja[i][j]];
+		for (int i = 0; i < m; ++i) {
+			for (int j = 0; j < maxnz; ++j) {
+				ellpack->y[i] += as[i][j] * x[ja[i][j]];
 			}
-			ellpack->y[i] = t;
 		}
 		ellpack->trackTime();
 	}

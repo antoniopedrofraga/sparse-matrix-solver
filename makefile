@@ -1,9 +1,9 @@
 all: sequential openmp cuda
 
 sequential:
-	g++ -O3 -Wall -fopenmp -std=c++11 src/sequential.cpp src/*/*.cpp -o bin/sequential
+	g++ -O3 -std=c++11 -Wall -fopenmp src/sequential.cpp src/*/*.cpp -o bin/sequential
 openmp:
-	g++ -O3 -Wall -fopenmp -lpthread -std=c++11 src/openmp.cpp src/*/*.cpp -o bin/openmp
+	g++ -O3 -std=c++11 -Wall -fopenmp -lpthread src/openmp.cpp src/*/*.cpp -o bin/openmp
 cuda:
 	nvcc -O3 -std=c++11 -D_MWAITXINTRIN_H_INCLUDED -D_FORCE_INLINES -D__STRICT_ANSI__ src/cuda.cpp src/*/*.cpp src/cuda.cu -o bin/cuda
 run:

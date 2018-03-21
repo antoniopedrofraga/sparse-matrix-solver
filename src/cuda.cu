@@ -9,20 +9,16 @@
  
 __global__ void solveCSR(CSR * csr) {
 	int i = threadIdx.x;
-	double t = 0.0;
-	for (int j = csr->irp[i]; j < csr->irp[i + 1] - 1; j++) {
-			t += csr->as[j] * csr->x[csr->ja[j]];
+	for (int j = csr->irp[i]; j < csr->irp[i + 1]; ++j) {
+			csr->y[i] += csr->as[j] * csr->x[csr->ja[j]];
 	}
-	csr->y[i] = t;
 }
 
 __global__ void solveEllpack(Ellpack * ellpack) {
 	int i = threadIdx.x;
-	double t = 0.0;
-	for (int j = 0; j < ellpack->maxnz; j++) {
-		t += ellpack->as[i][j] * ellpack->x[ellpack->ja[i][j]];
+	for (int j = 0; j < ellpack->maxnz; ++j) {
+		ellpack->y[i] += ellpack->as[i][j] * ellpack->x[ellpack->ja[i][j]];
 	}
-	ellpack->y[i] = t;
 }
 
 void solveCuda(IOmanager * io, std::string path, CSR * &csr, Ellpack * &ellpack) {
@@ -52,7 +48,7 @@ void solveCuda(IOmanager * io, std::string path, CSR * &csr, Ellpack * &ellpack)
 		cudaEventSynchronize(stop);
 		cudaEventElapsedTime(&elapsedtime, start, stop);
 		csr->addElapsedTime(elapsedtime);
-
+		
 		cudaEventRecord(start);
 		solveEllpack<<<1, m>>>(ellpack_c);
 		cudaThreadSynchronize();

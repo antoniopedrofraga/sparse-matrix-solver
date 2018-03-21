@@ -37,20 +37,20 @@ int Matrix::getCols() {
 }
 
 long long Matrix::getMegaFlops() {
-	return 2.0 * (double)this->nz / (this->elapsed_time / (double)this->measures) / 1000;
+	return 2.0 * (double)this->nz / ((double)this->elapsed_time / (double)this->measures) / 1000.0;
 }
 
 void Matrix::printElapsedTime() {
-	std::cout << " (" << (this->elapsed_time / (double)this->measures) << " ms) ";
+	std::cout << " (" << ((double)this->elapsed_time / (double)this->measures) << " ms " << this->measures << " measures) ";
 }
 
 void Matrix::trackTime() {
 	#if defined(_OPENMP)
 		if (this->measuring == false) {
-			this->start = omp_get_wtime() * 1000;
+			this->start = omp_get_wtime() * 1000.0;
 			this->measuring = true;
 		} else {
-			this->done = omp_get_wtime() * 1000;
+			this->done = omp_get_wtime() * 1000.0;
 			this->elapsed_time += done - start;
 			this->measures++;
 			this->measuring = false;
