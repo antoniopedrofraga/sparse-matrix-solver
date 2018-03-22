@@ -36,13 +36,15 @@ int Matrix::getCols() {
 	return this->cols;
 }
 
-long long Matrix::getMegaFlops() {
-	return 2.0 * (double)this->nz / ((double)this->elapsed_time / (double)this->measures) / 1000.0;
+unsigned long long Matrix::getMegaFlops() {
+	return 2.0 * (unsigned long long)this->nz / ((double)this->elapsed_time / (unsigned long long)this->measures) / 1000.0;
 }
 
 void Matrix::printElapsedTime() {
 	std::cout << " (" << ((double)this->elapsed_time / (double)this->measures) << " ms " << this->measures << " measures) ";
 }
+
+
 
 void Matrix::trackTime() {
 	#if defined(_OPENMP)
