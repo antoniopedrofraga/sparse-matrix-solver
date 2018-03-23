@@ -20,7 +20,7 @@ public:
 	int getCols();
 	void printElapsedTime();
 	void trackTime();
-	void addElapsedTime(float elapsed_time);
+	void resetResults();
 };
 
 #endif

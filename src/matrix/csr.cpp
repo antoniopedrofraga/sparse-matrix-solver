@@ -3,13 +3,21 @@
 CSR::CSR(int cols, int rows, int nz) : Matrix(cols, rows, nz) {
 	this->ja = new int[nz];
 	this->as = new double[nz];
-	this->irp = new int[cols];
+	this->irp = new int[cols + 1];
 	this->element_index = 0;
 	
 	this->irp_size = 0;
 
 	std::fill(&this->ja[0], &this->ja[nz], 0);
 	std::fill(&this->as[0], &this->as[nz], 0.0);
+};
+
+CSR::~CSR() {
+	delete [] this->x;
+	delete [] this->y;
+	delete [] this->ja;
+	delete [] this->as;
+	delete [] this->irp;
 };
 
 void CSR::addPointer(int pointer) {

@@ -12,6 +12,7 @@ public:
 	double * as;
 
 	CSR(int cols, int rows, int nz);
+	~CSR();
 	void addPointer(int pointer);
 	void addElement(int col_index, double value);
 	

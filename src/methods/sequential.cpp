@@ -1,12 +1,12 @@
 #include <iostream>
 #include <string>
 
-#include "matrix/csr.h"
-#include "matrix/ellpack.h"
-#include "io/iomanager.h"
-#include "matrix/matrix.h"
+#include "../matrix/csr.h"
+#include "../matrix/ellpack.h"
+#include "../io/iomanager.h"
+#include "../matrix/matrix.h"
 
-void solveCSR(CSR * &csr) {
+void sequentialCSR(CSR * &csr) {
 	int m = csr->getCols();
 	int * irp = csr->getirp();
 	int * ja = csr->getja();
@@ -16,7 +16,7 @@ void solveCSR(CSR * &csr) {
 	for (int k = 0; k < NR_RUNS; ++k) {
 		csr->trackTime();
 		for (int i = 0; i < m; ++i) {
-			for (int j = irp[i]; j < irp[i + 1]; ++j) {
+			for (int j = irp[i]; j < irp[i + 1] - 1; ++j) {
 				csr->y[i] += as[j] * x[ja[j]];
 			}
 		}
@@ -24,7 +24,7 @@ void solveCSR(CSR * &csr) {
 	}
 }
 
-void solveEllpack(Ellpack * &ellpack) {
+void sequentialEllpack(Ellpack * &ellpack) {
 	int m = ellpack->getCols();
 	int maxnz = ellpack->getmaxnz();
 	int ** ja = ellpack->getja();
@@ -41,17 +41,5 @@ void solveEllpack(Ellpack * &ellpack) {
 		ellpack->trackTime();
 	}
 }
-
-int main(int argc, char ** argv) {	
-	IOmanager * io = new IOmanager();
-	std::string path = io->parseArguments(argc, argv);
-	std::pair<CSR*, Ellpack*> matrices = io->readFile(path);
-
-	solveCSR(matrices.first);
-	solveEllpack(matrices.second);
-
-	io->exportResults(SEQUENTIAL, path, matrices.first, matrices.second);
-}
-
 
 

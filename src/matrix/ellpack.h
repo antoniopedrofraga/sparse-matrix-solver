@@ -9,6 +9,8 @@ public:
 	double ** as;
 	
 	Ellpack(int cols, int rows, int maxnz);
+	~Ellpack();
+	
 	void addElement(int col_index, int row_index, double value);
 
 	int getmaxnz();

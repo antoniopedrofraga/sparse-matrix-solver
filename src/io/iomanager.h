@@ -15,7 +15,6 @@ class IOmanager {
 	std::string extractName(std::string path);
 public:
 	IOmanager();
-	std::string parseArguments(int argc, char ** argv);
 	std::pair<CSR*, Ellpack*> readFile(string filename);
 	void exportResults(std::string output_file, std::string path, CSR * csr, Ellpack * ellpack);
 };

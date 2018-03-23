@@ -1,15 +1,15 @@
 #include <stdio.h>
 #include <iostream>
 
-#include "matrix/matrix.h"
-#include "matrix/csr.h"
-#include "matrix/ellpack.h"
-#include "io/iomanager.h"
-#include "utils/utils.h"
+#include "../matrix/matrix.h"
+#include "../matrix/csr.h"
+#include "../matrix/ellpack.h"
+#include "../io/iomanager.h"
+#include "../utils/utils.h"
  
 __global__ void solveCSR(CSR * csr) {
 	int i = threadIdx.x;
-	for (int j = csr->irp[i]; j < csr->irp[i + 1]; ++j) {
+	for (int j = csr->irp[i]; j < csr->irp[i + 1] - 1; ++j) {
 			csr->y[i] += csr->as[j] * csr->x[csr->ja[j]];
 	}
 }

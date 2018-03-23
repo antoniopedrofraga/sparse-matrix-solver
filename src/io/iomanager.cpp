@@ -14,14 +14,6 @@
 #include <regex>
 IOmanager::IOmanager() {}
 
-std::string IOmanager::parseArguments(int argc, char ** argv) {
-	if (argc != 2) {
-		std::cout << "Wrong usage of arguments, one should use: solver <path>" << std::endl;
-		exit(1);
-	}
-	return string(argv[1]);
-}
-
 std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 	FILE * file;
 	MM_typecode matcode;
@@ -33,6 +25,7 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 	map<int, set<Element*>> occurences;
 	size_t max_nz = 0;
 	size_t pointer = 0;
+	std::string type;
 
 	if ((file = fopen(filename.c_str(), "r")) == NULL) { 
 		std::cout << "Could not open file: " << filename << std::endl;
@@ -53,13 +46,23 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 		std::cout << "Could not get sizes: " << filename << std::endl;
 		exit(1);
 	}
-	
+
+	type = std::string(mm_typecode_to_str(matcode));
+	std::regex e(PATTERN);
+	bool is_pattern = std::regex_match(type, e);
+
+	std::cout << (is_pattern ? "(pattern) " : "(not pattern) ");
+
 	for (int i = 0; i < nz; i++) {
 		int m, n;
-		double value;
-
-		if (fscanf(file, "%d %d %lg\n", &m, &n, &value) < 0) {
-			std::cout <<  "Error reading from file " << filename << ", exiting..." << std::endl;
+		double value = 1;
+		if (is_pattern && fscanf(file, "%d %d\n", &m, &n) < 0) {
+			std::cout << "Here" << std::endl;
+			std::cout <<  "Error reading from file of type " << type << ": " << filename << ", exiting..." << std::endl;
+            exit(1);
+		} else if (!is_pattern && fscanf(file, "%d %d %lg\n", &m, &n, &value) < 0) {
+			std::cout << "Not here" << std::endl;
+			std::cout <<  "Error reading from file of type " << type << ": " << filename << ", exiting..." << std::endl;
             exit(1);
 		}
 
@@ -92,6 +95,7 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 			pointer++;
 		}
 	}
+	csr->addPointer(pointer);
 	
 	return make_pair(csr, ellpack);
 }

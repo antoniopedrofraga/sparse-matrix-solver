@@ -44,23 +44,22 @@ void Matrix::printElapsedTime() {
 	std::cout << " (" << ((double)this->elapsed_time / (double)this->measures) << " ms " << this->measures << " measures) ";
 }
 
-
-
-void Matrix::trackTime() {
-	#if defined(_OPENMP)
-		if (this->measuring == false) {
-			this->start = omp_get_wtime() * 1000.0;
-			this->measuring = true;
-		} else {
-			this->done = omp_get_wtime() * 1000.0;
-			this->elapsed_time += done - start;
-			this->measures++;
-			this->measuring = false;
-		}
-	#endif
+void Matrix::resetResults() {
+	//delete [] this->y;
+	//this->y = new double[cols];
+	this->measures = 0;
+	this->measuring = false;
+	this->elapsed_time = 0.0;
 }
 
-void Matrix::addElapsedTime(float elapsed_time) {
-	this->measures++;
-	this->elapsed_time += elapsed_time;
+void Matrix::trackTime() {
+	if (this->measuring == false) {
+		this->start = omp_get_wtime() * 1000.0;
+		this->measuring = true;
+	} else {
+		this->done = omp_get_wtime() * 1000.0;
+		this->elapsed_time += done - start;
+		this->measures++;
+		this->measuring = false;
+	}
 }
