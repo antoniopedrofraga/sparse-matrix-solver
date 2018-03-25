@@ -20,13 +20,6 @@ Ellpack::~Ellpack() {
 	delete [] this->x;
 	delete [] this->y;
 	delete [] this->pointer;
-
-	/*int cols = this->getCols();
-	for (int i = 0; i < cols; ++i) {
-		delete [] this->ja[i];
-		delete [] this->as[i];
-	}*/
-
 	delete [] this->ja;
 	delete [] this->as;
 };

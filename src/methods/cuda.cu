@@ -9,7 +9,7 @@
  
 __global__ void solveCSR(CSR * csr) {
 	int i = threadIdx.x;
-	for (int j = csr->irp[i]; j < csr->irp[i + 1] - 1; ++j) {
+	for (int j = csr->irp[i]; j < csr->irp[i + 1]; ++j) {
 			csr->y[i] += csr->as[j] * csr->x[csr->ja[j]];
 	}
 }

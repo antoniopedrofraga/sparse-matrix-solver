@@ -57,11 +57,9 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 		int m, n;
 		double value = 1;
 		if (is_pattern && fscanf(file, "%d %d\n", &m, &n) < 0) {
-			std::cout << "Here" << std::endl;
 			std::cout <<  "Error reading from file of type " << type << ": " << filename << ", exiting..." << std::endl;
             exit(1);
 		} else if (!is_pattern && fscanf(file, "%d %d %lg\n", &m, &n, &value) < 0) {
-			std::cout << "Not here" << std::endl;
 			std::cout <<  "Error reading from file of type " << type << ": " << filename << ", exiting..." << std::endl;
             exit(1);
 		}

@@ -3,7 +3,7 @@
 CSR::CSR(int cols, int rows, int nz) : Matrix(cols, rows, nz) {
 	this->ja = new int[nz];
 	this->as = new double[nz];
-	this->irp = new int[cols + 1];
+	this->irp = new int[nz + 1];
 	this->element_index = 0;
 	
 	this->irp_size = 0;
