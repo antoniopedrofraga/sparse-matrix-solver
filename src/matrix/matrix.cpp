@@ -36,8 +36,8 @@ int Matrix::getCols() {
 	return this->cols;
 }
 
-unsigned long long Matrix::getMegaFlops() {
-	return 2.0 * (unsigned long long)this->nz / ((double)this->elapsed_time / (unsigned long long)this->measures) / 1000.0;
+unsigned long long Matrix::getGigaFlops() {
+	return 2.0 * (unsigned long long)this->nz / ((double)this->elapsed_time / (unsigned long long)this->measures) / 1000000.0;
 }
 
 void Matrix::printElapsedTime() {
@@ -54,10 +54,10 @@ void Matrix::resetResults() {
 
 void Matrix::trackTime() {
 	if (this->measuring == false) {
-		this->start = omp_get_wtime() * 1000.0;
+		this->start = omp_get_wtime();
 		this->measuring = true;
 	} else {
-		this->done = omp_get_wtime() * 1000.0;
+		this->done = omp_get_wtime();
 		this->elapsed_time += done - start;
 		this->measures++;
 		this->measuring = false;

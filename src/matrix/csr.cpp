@@ -3,11 +3,12 @@
 CSR::CSR(int cols, int rows, int nz) : Matrix(cols, rows, nz) {
 	this->ja = new int[nz];
 	this->as = new double[nz];
-	this->irp = new int[nz + 1];
+	this->irp = new int[cols + 1];
 	this->element_index = 0;
 	
 	this->irp_size = 0;
 
+	std::fill(&this->irp[0], &this->irp[cols + 1], -1);
 	std::fill(&this->ja[0], &this->ja[nz], 0);
 	std::fill(&this->as[0], &this->as[nz], 0.0);
 };

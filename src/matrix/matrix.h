@@ -15,7 +15,7 @@ public:
 	double * x, * y;
 	Matrix(int cols, int rows, int nz);
 	double * getX();
-	unsigned long long getMegaFlops();
+	unsigned long long getGigaFlops();
 	int getnz();
 	int getCols();
 	void printElapsedTime();
