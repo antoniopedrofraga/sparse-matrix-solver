@@ -56,12 +56,16 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 	for (int i = 0; i < nz; i++) {
 		int m, n;
 		double value = 1;
-		if (is_pattern && fscanf(file, "%d %d\n", &m, &n) < 0) {
-			std::cout <<  "Error reading from file of type " << type << ": " << filename << ", exiting..." << std::endl;
-            exit(1);
-		} else if (!is_pattern && fscanf(file, "%d %d %lg\n", &m, &n, &value) < 0) {
-			std::cout <<  "Error reading from file of type " << type << ": " << filename << ", exiting..." << std::endl;
-            exit(1);
+		if (is_pattern) {
+			if (fscanf(file, "%d %d\n", &m, &n) < 0) {
+				std::cout <<  "Error reading from file of type " << type << ": " << filename << ", exiting..." << std::endl;
+            	exit(1);
+            }
+		} else {
+			if (fscanf(file, "%d %d %lg\n", &m, &n, &value) < 0) {
+				std::cout <<  "Error reading from file of type " << type << ": " << filename << ", exiting..." << std::endl;
+            	exit(1);
+			}
 		}
 
 		m--; n--;
@@ -79,11 +83,11 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 	}
 	
 	csr = new CSR(N, M, nz);
-	ellpack = new Ellpack(N, M, max_nz);	
+	ellpack = new Ellpack(N, M, max_nz, nz);
 	
 	for (auto map_it = occurences.begin(); map_it != occurences.end(); map_it++) {
 		int col_index = map_it->first;
-		set<Element *> elements = map_it->second;
+		set<Element*> elements = map_it->second;
 		csr->addPointer(pointer);
 		for (auto set_it = elements.begin(); set_it != elements.end(); set_it++) {
 			double value = (*set_it)->getValue();
@@ -121,8 +125,26 @@ void IOmanager::exportResults(std::string output_file, std::string path, CSR * c
 
 	csr->printElapsedTime();
 	ellpack->printElapsedTime();
-	
-	name = extractName(path);
-	out << csr->getnz() << " " << csr->getGigaFlops() << " " << ellpack->getGigaFlops() << std::endl;
+
+	out << csr->getnz() << " " << csr->getMegaFlops() << " " << ellpack->getMegaFlops() << std::endl;
+
+	if (output_file == OPENMP) {
+		this->exportOMPResults(path, csr, ellpack);
+	}
+
+	out.close();
+}
+
+
+void IOmanager::exportOMPResults(std::string path, CSR * csr, Ellpack * ellpack) {
+	std::ofstream out; 
+	std::string name = extractName(path), output_file = OUTPUTS + "/OMP_" + name + ".csv";
+	out.open(output_file, std::ios::out | std::ios_base::app);
+
+	for (int i = 0; i < NUM_THREADS; ++i) {
+		out << (i + MIN_THREADS) << " " << csr->getMegaFlops(i) << " " << ellpack->getMegaFlops(i) << std::endl;
+	}
+
+	out.close();
 }
 

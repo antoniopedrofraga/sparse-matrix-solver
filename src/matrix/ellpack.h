@@ -8,7 +8,7 @@ public:
 	int maxnz, ** ja, * pointer;
 	double ** as;
 	
-	Ellpack(int cols, int rows, int maxnz);
+	Ellpack(int cols, int rows, int maxnz, int nz);
 	~Ellpack();
 	
 	void addElement(int col_index, int row_index, double value);

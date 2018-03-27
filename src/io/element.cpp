@@ -1,6 +1,6 @@
 #include "element.h"
 
-Element::Element(int m, int value) {
+Element::Element(int m, double value) {
 	this->m = m;
 	this->value = value;
 }

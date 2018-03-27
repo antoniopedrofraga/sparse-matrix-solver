@@ -13,6 +13,7 @@ class IOmanager {
 	string filename;
 
 	std::string extractName(std::string path);
+	void exportOMPResults(std::string path, CSR * csr, Ellpack * ellpack);
 public:
 	IOmanager();
 	std::pair<CSR*, Ellpack*> readFile(string filename);

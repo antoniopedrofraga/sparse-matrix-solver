@@ -1,4 +1,5 @@
 #include "csr.h"
+#include <iostream>
 
 CSR::CSR(int cols, int rows, int nz) : Matrix(cols, rows, nz) {
 	this->ja = new int[nz];
