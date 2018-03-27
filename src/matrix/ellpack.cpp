@@ -1,17 +1,21 @@
 #include "ellpack.h"
+#include <iostream>
 
 Ellpack::Ellpack(int cols, int rows, int maxnz, int nz) : Matrix(cols, rows, nz) {
 	this->maxnz = maxnz;
-	this->ja = new int * [cols];
-	this->pointer = new int[cols];
-	this->as = new double * [cols];
+	this->ja = new int * [rows];
+	this->pointer = new int[rows];
+	this->as = new double * [rows];
 	
-	std::fill(&this->ja[0], &this->ja[cols], new int[maxnz]);
-	std::fill(&this->as[0], &this->as[cols], new double[maxnz]);
-	std::fill(&this->pointer[0], &this->pointer[cols], 0);
+	for (int i = 0; i < rows; ++i) {
+		this->ja[i] = new int[maxnz];
+		this->as[i] = new double[maxnz];
+	}
 	
-	for (int i = 0; i < cols; ++i) {
-		std::fill(&this->ja[i][0], &this->ja[i][maxnz], -1);
+	std::fill(&this->pointer[0], &this->pointer[rows], 0);
+	
+	for (int i = 0; i < rows; ++i) {
+		std::fill(&this->ja[i][0], &this->ja[i][maxnz], 0);
 		std::fill(&this->as[i][0], &this->as[i][maxnz], 0.0);
 	}
 };
@@ -24,11 +28,11 @@ Ellpack::~Ellpack() {
 	delete [] this->as;
 };
 
-void Ellpack::addElement(int col_index, int row_index, double value) {
-	int p = this->pointer[col_index];
-	this->ja[col_index][p] = row_index;
-	this->as[col_index][p] = value;
-	this->pointer[col_index]++;
+void Ellpack::addElement(int row_index, int col_index, double value) {
+	int p = this->pointer[row_index];
+	this->ja[row_index][p] = col_index;
+	this->as[row_index][p] = value;
+	this->pointer[row_index]++;
 }
 
 int Ellpack::getmaxnz() {
@@ -45,4 +49,24 @@ int * Ellpack::getpointers() {
 
 double ** Ellpack::getas() {
 	return this->as;
+}
+
+void Ellpack::print() {
+	std::cout << "M = " << getRows() << std::endl;
+	std::cout << "N = " << getCols() << std::endl;
+	std::cout << "MAXNZ = " << maxnz << std::endl;
+	std::cout << "JA = " << std::endl;
+	for (int i = 0; i < getRows(); ++i) {
+		for (int j = 0; j < maxnz; ++j) {
+			std::cout << ja[i][j] << " ";
+		}
+		std::cout << std::endl;
+	}
+	std::cout << "AS = " << std::endl;
+	for (int i = 0; i < getRows(); ++i) {
+		for (int j = 0; j < maxnz; ++j) {
+			std::cout << as[i][j] << " ";
+		}
+		std::cout << std::endl;
+	}
 }

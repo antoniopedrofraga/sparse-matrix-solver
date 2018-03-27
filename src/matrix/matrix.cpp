@@ -6,8 +6,8 @@
 
 Matrix::Matrix(int cols, int rows, int nz) {
 	this->nz = nz;
-	this->cols = cols;
 	this->rows = rows;
+	this->cols = cols;
 	this->x = new double[cols];
 	this->y = new double[cols];
 	
@@ -18,7 +18,7 @@ Matrix::Matrix(int cols, int rows, int nz) {
 	this->omp_times_threads = new std::pair<int, double>[NUM_THREADS];
 
 	std::fill(&omp_times_threads[0], &omp_times_threads[NUM_THREADS], std::make_pair(0, 0.0));
-	std::fill(&y[0], &y[cols], 0.0);
+	std::fill(&this->y[0], &this->y[0], 0.0);
 	srand(time(NULL));
 
 	for (int i = 0; i < cols; i++) {
@@ -40,6 +40,10 @@ int Matrix::getCols() {
 	return this->cols;
 }
 
+int Matrix::getRows() {
+	return this->rows;
+}
+
 unsigned long long Matrix::getMegaFlops() {
 	return 2.0 * (unsigned long long)this->nz / ((double)this->elapsed_time / (unsigned long long)this->measures) / 1000.0;
 }
@@ -55,7 +59,7 @@ void Matrix::printElapsedTime() {
 void Matrix::resetResults() {
 	delete [] this->y;
 	this->y = new double[cols];
-	std::fill(&y[0], &y[cols], 0.0);
+	std::fill(&this->y[0], &this->y[0], 0.0);
 
 	this->measures = 0;
 	this->measuring = false;

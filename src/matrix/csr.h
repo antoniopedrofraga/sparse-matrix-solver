@@ -19,6 +19,7 @@ public:
 	int * getja();
 	double * getas();
 	int * getirp();
+	void print();
 };
 
 #endif

@@ -9,9 +9,10 @@
 #include <algorithm>
 #include <stdlib.h>
 #include <map>
-#include <set>
+#include <vector>
 #include <string>
 #include <regex>
+
 IOmanager::IOmanager() {}
 
 std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
@@ -22,8 +23,8 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 	Ellpack * ellpack;
 	
 	int M, N, nz; 
-	map<int, set<Element*>> occurences;
-	size_t max_nz = 0;
+	map<int, std::vector<Element*>> occurences;
+	size_t max_nz = 1;
 	size_t pointer = 0;
 	std::string type;
 
@@ -47,9 +48,7 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 		exit(1);
 	}
 
-	type = std::string(mm_typecode_to_str(matcode));
-	std::regex e(PATTERN);
-	bool is_pattern = std::regex_match(type, e);
+	bool is_pattern = mm_is_pattern(matcode);
 
 	std::cout << (is_pattern ? "(pattern) " : "(not pattern) ");
 
@@ -62,23 +61,23 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
             	exit(1);
             }
 		} else {
-			if (fscanf(file, "%d %d %lg\n", &m, &n, &value) < 0) {
+			if (fscanf(file, "%d %d %lg\n", &n, &m, &value) < 0) {
 				std::cout <<  "Error reading from file of type " << type << ": " << filename << ", exiting..." << std::endl;
             	exit(1);
 			}
 		}
 
 		m--; n--;
-		Element * el = new Element(m, value);
+		Element * el = new Element(n, value);
 		
-		auto it = occurences.find(n);
+		auto it = occurences.find(m);
 		if (it != occurences.end()) {
-			it->second.insert(el);
+			it->second.push_back(el);
 			if (max_nz < it->second.size()) {
 				max_nz = it->second.size();
 			}
 		} else {
-			occurences.insert({n, {el}});
+			occurences.insert({m, {el}});
 		}
 	}
 	
@@ -86,18 +85,19 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 	ellpack = new Ellpack(N, M, max_nz, nz);
 	
 	for (auto map_it = occurences.begin(); map_it != occurences.end(); map_it++) {
-		int col_index = map_it->first;
-		set<Element*> elements = map_it->second;
+		int row_index = map_it->first;
+		std::vector<Element*> elements = map_it->second;
 		csr->addPointer(pointer);
-		for (auto set_it = elements.begin(); set_it != elements.end(); set_it++) {
-			double value = (*set_it)->getValue();
-			int row_index = (*set_it)->getRow();
+		for (size_t i = 0; i < elements.size(); ++i) {
+			double value = elements[i]->getValue();
+			int col_index = elements[i]->getRow();
 			csr->addElement(col_index, value);
-			ellpack->addElement(col_index, row_index, value);
+			ellpack->addElement(row_index, col_index, value);
 			pointer++;
 		}
 	}
 	csr->addPointer(pointer);
+
 	
 	return make_pair(csr, ellpack);
 }

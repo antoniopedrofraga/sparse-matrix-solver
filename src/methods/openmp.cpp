@@ -22,7 +22,7 @@ void openmpCSR(CSR * &csr) {
 			if (k != 0) csr->trackTimeOMP(t);
 			#pragma omp parallel for private(i) schedule(static) num_threads(t)
 			for (i = 0; i < m; ++i) {
-				for (int j = irp[i]; j < irp[i + 1]; ++j) {
+				for (int j = irp[i]; j < irp[i + 1] - 1; ++j) {
 					y[i] += (double)as[j] * (double)x[ja[j]];
 				}
 			}

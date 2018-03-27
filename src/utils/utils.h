@@ -9,6 +9,7 @@ const std::string OPENMP = OUTPUTS + "openmp.csv";
 const std::string CUDA = OUTPUTS + "cuda.csv";
 
 const std::string PATTERN = "matrix coordinate pattern.*";
+const std::string ARRAY = "matrix coordinate pattern.*";
 
 const int NR_RUNS = 10;
 

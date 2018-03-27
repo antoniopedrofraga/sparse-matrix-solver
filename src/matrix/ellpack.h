@@ -17,6 +17,7 @@ public:
 	int ** getja();
 	int * getpointers();
 	double ** getas();
+	void print();
 };
 
 #endif

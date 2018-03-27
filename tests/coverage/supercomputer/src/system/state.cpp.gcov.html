@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - supercomputer/src/system/state.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">supercomputer/src/system</a> - state.cpp<span style="font-size: 80%;"> (source / <a href="state.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">49</td>
+            <td class="headerCovTableEntry">49</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-01-07 01:49:10</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">13</td>
+            <td class="headerCovTableEntry">13</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : #include &quot;state.h&quot;</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : /*!
+<a name="4"><span class="lineNum">       4 </span>            :   Default contructor of State. </a>
+<span class="lineNum">       5 </span>            : */
+<span class="lineNum">       6 </span><span class="lineCov">      21507 : State::State(long long int total_cores, time_t time, StateType state_type) {</span>
+<span class="lineNum">       7 </span><span class="lineCov">      21507 :         this-&gt;total_cores = total_cores;</span>
+<span class="lineNum">       8 </span><span class="lineCov">      21507 :         this-&gt;short_cores = total_cores * 0.1;</span>
+<span class="lineNum">       9 </span><span class="lineCov">      21507 :         this-&gt;medium_cores = total_cores * 0.2;</span>
+<span class="lineNum">      10 </span><span class="lineCov">      21507 :         this-&gt;large_cores = total_cores * 0.7;</span>
+<span class="lineNum">      11 </span><span class="lineCov">      21507 :         this-&gt;used_cores = 0;</span>
+<span class="lineNum">      12 </span>            : 
+<span class="lineNum">      13 </span><span class="lineCov">      21507 :         this-&gt;time = time;</span>
+<span class="lineNum">      14 </span><span class="lineCov">      21507 :         this-&gt;state_type = state_type;</span>
+<span class="lineNum">      15 </span><span class="lineCov">      21507 : }</span>
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : /*!
+<a name="18"><span class="lineNum">      18 </span>            :   Alternative contructor of State. </a>
+<span class="lineNum">      19 </span>            : */
+<span class="lineNum">      20 </span><span class="lineCov">     478507 : State::State(State state, time_t time, StateType state_type) {</span>
+<span class="lineNum">      21 </span><span class="lineCov">     478507 :         this-&gt;total_cores = state.get_total_cores();</span>
+<span class="lineNum">      22 </span><span class="lineCov">     478507 :         this-&gt;short_cores = state.get_short_cores();</span>
+<span class="lineNum">      23 </span><span class="lineCov">     478507 :         this-&gt;medium_cores = state.get_medium_cores();</span>
+<span class="lineNum">      24 </span><span class="lineCov">     478507 :         this-&gt;large_cores = state.get_large_cores();</span>
+<span class="lineNum">      25 </span><span class="lineCov">     478507 :         this-&gt;used_cores = state.get_used_cores();</span>
+<span class="lineNum">      26 </span>            : 
+<span class="lineNum">      27 </span><span class="lineCov">     478507 :         this-&gt;time = time;</span>
+<span class="lineNum">      28 </span><span class="lineCov">     478507 :         this-&gt;state_type = state_type;</span>
+<span class="lineNum">      29 </span><span class="lineCov">     478507 : }</span>
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : /*!
+<a name="32"><span class="lineNum">      32 </span>            :   Decreases the available number of a computational resources available in the system according to type of job. </a>
+<span class="lineNum">      33 </span>            : */
+<span class="lineNum">      34 </span><span class="lineCov">    1067478 : void State::insert_job(Job job) {</span>
+<span class="lineNum">      35 </span><span class="lineCov">    1067478 :         if (job.is_short()) {</span>
+<span class="lineNum">      36 </span><span class="lineCov">     307651 :                 this-&gt;short_cores -= job.get_cores();</span>
+<span class="lineNum">      37 </span><span class="lineCov">     759827 :         } else if (job.is_medium()) {</span>
+<span class="lineNum">      38 </span><span class="lineCov">     555756 :                 this-&gt;medium_cores -= job.get_cores();</span>
+<span class="lineNum">      39 </span><span class="lineCov">     204071 :         } else if (job.is_large()) {</span>
+<span class="lineNum">      40 </span><span class="lineCov">     183616 :                 this-&gt;large_cores -= job.get_cores();</span>
+<span class="lineNum">      41 </span><span class="lineCov">      20455 :         } else if (job.is_huge()) {</span>
+<span class="lineNum">      42 </span><span class="lineCov">      20455 :                 this-&gt;short_cores = 0;</span>
+<span class="lineNum">      43 </span><span class="lineCov">      20455 :                 this-&gt;medium_cores = 0;</span>
+<span class="lineNum">      44 </span><span class="lineCov">      20455 :                 this-&gt;large_cores = 0;</span>
+<span class="lineNum">      45 </span>            :         }
+<span class="lineNum">      46 </span><span class="lineCov">    1067478 :         this-&gt;used_cores += job.get_cores();</span>
+<span class="lineNum">      47 </span><span class="lineCov">    1067478 : }</span>
+<span class="lineNum">      48 </span>            : 
+<span class="lineNum">      49 </span>            : /*!
+<a name="50"><span class="lineNum">      50 </span>            :   Indicates whether a job can run with the available computational resources at this system state. </a>
+<span class="lineNum">      51 </span>            : */
+<span class="lineNum">      52 </span><span class="lineCov">   86359146 : bool State::can_insert_job(Job job) {</span>
+<span class="lineNum">      53 </span><span class="lineCov">   86359146 :         int subtraction = -1;</span>
+<span class="lineNum">      54 </span><span class="lineCov">   86359146 :         if (job.is_short()) {</span>
+<span class="lineNum">      55 </span><span class="lineCov">    2352612 :                 subtraction = this-&gt;short_cores - job.get_cores();</span>
+<span class="lineNum">      56 </span><span class="lineCov">   84006534 :         } else if (job.is_medium()) {</span>
+<span class="lineNum">      57 </span><span class="lineCov">   62697728 :                 subtraction = this-&gt;medium_cores - job.get_cores();</span>
+<span class="lineNum">      58 </span><span class="lineCov">   21308806 :         } else if (job.is_large()) {</span>
+<span class="lineNum">      59 </span><span class="lineCov">   21308806 :                 subtraction = this-&gt;large_cores - job.get_cores();</span>
+<span class="lineNum">      60 </span>            :         }
+<span class="lineNum">      61 </span><span class="lineCov">   86359146 :         return subtraction &gt;= 0;</span>
+<span class="lineNum">      62 </span>            : }
+<span class="lineNum">      63 </span>            : /*!
+<a name="64"><span class="lineNum">      64 </span>            :   Returns time of ocurrence. </a>
+<span class="lineNum">      65 </span>            : */
+<span class="lineNum">      66 </span><span class="lineCov">  101995223 : time_t State::get_time() {</span>
+<span class="lineNum">      67 </span><span class="lineCov">  101995223 :         return this-&gt;time;</span>
+<span class="lineNum">      68 </span>            : }
+<span class="lineNum">      69 </span>            : 
+<span class="lineNum">      70 </span>            : /*!
+<a name="71"><span class="lineNum">      71 </span>            :   Returns state type. </a>
+<span class="lineNum">      72 </span>            : */
+<span class="lineNum">      73 </span><span class="lineCov">     500014 : StateType State::get_type() {</span>
+<span class="lineNum">      74 </span><span class="lineCov">     500014 :         return this-&gt;state_type;</span>
+<span class="lineNum">      75 </span>            : }
+<span class="lineNum">      76 </span>            : 
+<span class="lineNum">      77 </span>            : /*!
+<a name="78"><span class="lineNum">      78 </span>            :   Returns the amount of available computational resources for short jobs. </a>
+<span class="lineNum">      79 </span>            : */
+<span class="lineNum">      80 </span><span class="lineCov">     478507 : long long int State::get_short_cores() { return this-&gt;short_cores; }</span>
+<span class="lineNum">      81 </span>            : 
+<span class="lineNum">      82 </span>            : /*!
+<a name="83"><span class="lineNum">      83 </span>            :   Returns the amount of available computational resources for medium jobs. </a>
+<span class="lineNum">      84 </span>            : */
+<span class="lineNum">      85 </span><span class="lineCov">     478507 : long long int State::get_medium_cores() { return this-&gt;medium_cores; }</span>
+<span class="lineNum">      86 </span>            : 
+<span class="lineNum">      87 </span>            : /*!
+<a name="88"><span class="lineNum">      88 </span>            :   Returns the amount of available computational resources for large jobs. </a>
+<span class="lineNum">      89 </span>            : */
+<span class="lineNum">      90 </span><span class="lineCov">     478507 : long long int State::get_large_cores() { return this-&gt;large_cores; }</span>
+<span class="lineNum">      91 </span>            : 
+<span class="lineNum">      92 </span>            : /*!
+<a name="93"><span class="lineNum">      93 </span>            :   Returns the total number of cores. </a>
+<span class="lineNum">      94 </span>            : */
+<span class="lineNum">      95 </span><span class="lineCov">     478507 : long long int State::get_total_cores() { return this-&gt;total_cores; }</span>
+<span class="lineNum">      96 </span>            : 
+<span class="lineNum">      97 </span>            : /*!
+<a name="98"><span class="lineNum">      98 </span>            :   Returns the number of used cores. </a>
+<span class="lineNum">      99 </span>            : */
+<span class="lineNum">     100 </span><span class="lineCov">     478510 : long long int State::get_used_cores() { return this-&gt;used_cores; }</span>
+<span class="lineNum">     101 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -10,7 +10,7 @@ CSR::CSR(int cols, int rows, int nz) : Matrix(cols, rows, nz) {
 	this->irp_size = 0;
 
 	std::fill(&this->irp[0], &this->irp[cols + 1], -1);
-	std::fill(&this->ja[0], &this->ja[nz], 0);
+	std::fill(&this->ja[0], &this->ja[nz], -1);
 	std::fill(&this->as[0], &this->as[nz], 0.0);
 };
 
@@ -43,4 +43,24 @@ double * CSR::getas() {
 
 int * CSR::getirp() {
 	return this->irp;
+}
+
+void CSR::print() {
+	std::cout << "M = " << getRows() << std::endl;
+	std::cout << "N = " << getCols() << std::endl;
+	std::cout << "IRP = ";
+	for (int i = 0; i < getCols() + 1; ++i) {
+		std::cout << irp[i] << " ";
+	}
+	std::cout << std::endl;
+	std::cout << "JA = ";
+	for (int i = 0; i < getnz(); ++i) {
+		std::cout << ja[i] << " ";
+	}
+	std::cout << std::endl;
+	std::cout << "AS = ";
+	for (int i = 0; i < getnz(); ++i) {
+		std::cout << as[i] << " ";
+	}
+	std::cout << std::endl;
 }

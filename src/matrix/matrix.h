@@ -21,6 +21,7 @@ public:
 	unsigned long long getMegaFlops(int i);
 	int getnz();
 	int getCols();
+	int getRows();
 	void printElapsedTime();
 	void trackTime();
 	void resetResults();
