@@ -60,6 +60,7 @@
 \onehalfspacing
 \setcounter{tocdepth}{5}
 \setcounter{secnumdepth}{5}
+\setcounter{MaxMatrixCols}{20}
 \inputencoding{utf8}
 
 \titleformat{\paragraph}
@@ -107,7 +108,7 @@
 \null\vspace{\fill}
 \begin{abstract}
 \normalsize
-The product of a sparse matrix and a vector was calculated both in parallel and sequentially. The parallel procedure was executed with two different technologies, Open Multi-Processing and Compute Unified Device Architecture. Sparse matrices were stored in two different formats, Compressed Sparse Row and Ellpack. Different procedures produced different effects, those effects were discussed and studied. 
+The product of a sparse matrix and a vector was calculated both in parallel and sequentially. The parallel procedure was executed with two different technologies, Open Multi-Processing and Compute Unified Device Architecture. Sparse matrices were stored in two different formats, Compressed Sparse Row and Ellpack. It was seen that the two formats were adequate for different types of matrices. Different procedures produced different effects, those effects were discussed and studied.
 \end{abstract}
 \vspace{\fill}
 \thispagestyle{empty}
@@ -139,8 +140,15 @@ The product of a sparse matrix and a vector was calculated both in parallel and 
 \centering
 \def\arraystretch{1.5}
 \begin{tabular}{ll}
-Matrix Rows & $m$\\
-Matrix Columns & $n$\\
+Matrix number of rows & $m$\\
+Matrix number of columns & $n$\\
+Sparse matrix & $A$\\
+Vector to be multiplied & $x$\\
+Resulting vector & $b$\\
+Floating operations per second & \textit{FLOPS} \\
+Number of non-zero values & \textit{nz} \\
+Maximum number of non-zero values per row & \textit{maxnz} \\
+Computation time of a given method & \textit{T} \\
 \end{tabular}
 \end{table}
 
@@ -151,15 +159,129 @@ Matrix Columns & $n$\\
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
 
-\par Bidimensional matrices are often represented in a bidimensional array of values of \textbf{m} by \textbf{n} elements.
+\par Bidimensional matrices are often represented in a bidimensional array of values of $m \times n$ elements. When matrices with this representation are multiplied by a vector, one has to iterate through every element of a matrix. This approach can be rather time expensive when dealing with large matrices.
+\par Sparse Matrices have a particular characteristic. They are formed by a larger number of \textbf{zero} values, compared to the amount of \textbf{non-zero} elements. Therefore, these matrices can be represented in different formats in order to avoid multiplications by zero.\cite{sparse-gpu} The distribution of \textbf{non-zero} values within these matrices is unpredictable. Hence, one has to come up with workable formats, allowing to have knowledge of a particular row, column and value.
 
+\subsection*{Sparse Matrices Formats}
+\addcontentsline{toc}{subsection}{Sparse Matrices Formats}
 
+\par Sparse Matrices can be stored in several formats like \textbf{DIA} (diagonal), more adequate for matrices which elements are spread across the diagonal,  and \textbf{COO} (Coordinate Format).\cite{sparse-gpu} In this project, the \textbf{CSR} (Compressed Sparse Row) and \textbf{Ellpack} formats were the only ones to be compared. Using \textbf{0-based indexing}, and having a matrix defined by,
+
+\begin{center}
+\centering
+\begin{minipage}{.4\textwidth}
+  \flushright
+  A  =   
+	$
+	\begin{pmatrix}
+    & \textbf{3} & \textbf{4} & 0 & 0 & 0 & \\
+    & 0 & \textbf{5} & \textbf{1} & 0 & 0 & \\
+    & 0 & \textbf{11} & \textbf{12} & 0 & 0 & \\
+    & 0 & 0 & \textbf{2} & \textbf{13} & 0 & \\
+    & 0 & 0 & 0 & \textbf{1} & \textbf{-1} & \\
+	\end{pmatrix}
+	$
+\end{minipage}%
+\begin{minipage}{.4\textwidth}
+ \center
+  \textit{m} = $5$
+  \linebreak
+  \textit{n} = $5$
+\end{minipage}
+\linebreak
+\end{center}
+
+\par the CSR format can be represented by declaring the number of \textit{non-zero} values, \textit{nz}. An array of values, \textit{as}, of length \textbf{\textit{nz}}. One array of pointers, \textit{irp}, indicating which value in the previous array belongs to the next row. And finally, an array of columns of length \textbf{\textit{nz}}, \textit{ja}, indicating the column index of each value. Therefore, for the given matrix, one can write the described arrays and value as,
+
+\begin{center}
+\textit{nz}  =  10 
+\linebreak
+\linebreak
+\textit{irp}  =   
+$
+\begin{pmatrix}
+    & 0 & 2 & 4 & 6 & 8 & \\
+\end{pmatrix}
+$
+\linebreak
+\linebreak
+\textit{as}  =   
+$
+\begin{pmatrix}
+    & 3 & 4 & 5 & 1 & 11 & 12 & 2 & 13 & 1 & -1 & \\
+\end{pmatrix}
+$
+\linebreak
+\linebreak
+\textit{ja}  =   
+$
+\begin{pmatrix}
+    & 0 & 1 & 1 & 2 & 1 & 2 & 2 & 3 & 3 & 4 & \\
+\end{pmatrix}
+$
+\linebreak
+\end{center}
+
+\par One can represent a matrix in the \textbf{Ellpack} format by defining two \textbf{bidimensional} arrays and one value. Declaring \textit{maxnz} as the maximum number of non-zero values in a given row, one can declare two arrays of \textit{m} rows by \textit{maxnz} elements. Similarly to the CSR format, the first array, \textit{ja}, contains the column index of each value per row. The second array, \textit{as}, contains the given values per row,
+
+\begin{center}
+\textit{maxnz}  =  2 
+\linebreak
+\linebreak
+
+\begin{minipage}{.4\textwidth}
+  \center
+  \textit{as}  =   
+$
+\begin{pmatrix}
+    & 3 & 4 & \\
+    & 5 & 1 & \\
+    & 11 & 12 & \\
+    & 2 & 13 & \\
+    & 1 & -1 & \\
+\end{pmatrix}
+$
+\end{minipage}%
+\begin{minipage}{.4\textwidth}
+ \center
+  \textit{ja}  =   
+$
+\begin{pmatrix}
+    & 0 & 1 & \\
+    & 1 & 2 & \\
+    & 1 & 2 & \\
+    & 2 & 3 & \\
+    & 3 & 4 & \\
+\end{pmatrix}
+$
+\end{minipage}
+\end{center}
+
+ 
 \subsection*{Problem definition}
 \addcontentsline{toc}{subsection}{Problem definition}
 
+\par The problem consisted in analysing the performance produced by a developed kernel. This kernel was able to solve a \textbf{Sparse Matrix-Vector Multiplication}, $A.x = b$. Besides of being able to solve the previous equation, the code should be able to do it in parallel, using \textbf{OpenMP} (Open Multi-Processing) and \textbf{CUDA} (Compute Unified Device Architecture).
+\par A set of matrices obtained from the University of Florida Sparse Matrix Collection\cite{sparse-matrices}, should be used to conduct the performance analysis. The files which contained the matrices were represented in the \textbf{Matrix Market} format, and they were read with software based on a \textbf{Matrix Market} format reader. \cite{matrix-reader} 
 
-\subsection*{Numerical analysis}
-\addcontentsline{toc}{subsection}{Numerical analysis}
+\subsection*{Performance analysis}
+\addcontentsline{toc}{subsection}{Performance analysis}
+
+\par The performance of a given method could be measured in \textit{FLOPS}, the number of floating operations per second. For each method, it was possible to calculated this value by the following formula,
+
+\begin{center}
+\large
+\textit{FLOPS} = 
+\huge
+$
+\frac{2 \times nz}{T}
+$
+\end{center}
+
+In order to calculate the resulting vector in the $A.x = b$ equation, one has to execute \textbf{two} floating operations per \textit{non-zero} value. Thus, the \textbf{numerator} expression of the previous division is obtained. The \textbf{denominator} is defined by the time, in seconds, used to solve the equation.
+
+\subsection*{CPUs vs GPUs}
+\addcontentsline{toc}{subsection}{CPUs vs GPUs}
 
 
 \section*{Procedures}
@@ -193,6 +315,14 @@ Raphael Yuster and Uri Zwick, \textit{Fast sparse matrix multiplication}, Availa
 \bibitem{sparse-gpu}
 B. Neelima1 and Prakash S. Raghavendra, April 2012,  \textit{Effective Sparse Matrix Representation for the
 GPU Architectures}, Available at: <\url{https://pdfs.semanticscholar.org/2d15/dd5d0975fff797397ad31059ec097b659e00.pdf}> [Accessed 28 March 2017]
+
+\bibitem{sparse-matrices}
+University of Florida, \textit{Sparse Matrix Collection}, Available at: <\url{https://sparse.tamu.edu/}> [Accessed 28 March 2017]
+
+\bibitem{matrix-reader}
+Matrix Market, \textit{ANSI C library for Matrix Market I/O}, Available at: <\url{https://math.nist.gov/MatrixMarket/mmio-c.html}> [Accessed 28 March 2017]
+
+
 
 \end{thebibliography}
 \newpage
