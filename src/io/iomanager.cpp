@@ -22,7 +22,7 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 	CSR * csr; 
 	Ellpack * ellpack;
 	
-	int M, N, nz; 
+	int M, N, num_values, nz; 
 	map<int, std::vector<Element*>> occurences;
 	size_t max_nz = 1;
 	size_t pointer = 0;
@@ -43,41 +43,59 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 		exit(1);
 	}
 
-	if (mm_read_mtx_crd_size(file, &M, &N, &nz) != 0) {
+	if (mm_read_mtx_crd_size(file, &M, &N, &num_values) != 0) {
 		std::cout << "Could not get sizes: " << filename << std::endl;
 		exit(1);
 	}
 
+	bool is_symmetric = mm_is_symmetric(matcode);
 	bool is_pattern = mm_is_pattern(matcode);
 
-	std::cout << (is_pattern ? "(pattern) " : "(not pattern) ");
+	nz = is_symmetric ? num_values * 2 : num_values;
 
-	for (int i = 0; i < nz; i++) {
+	std::cout << (is_pattern ? "(pattern) " : "(not pattern) ");
+	std::cout << (is_symmetric ? "(symmetric) " : "(not symmetric) ");
+
+	for (int i = 0; i < num_values; i++) {
 		int m, n;
 		double value = 1;
 		if (is_pattern) {
 			if (fscanf(file, "%d %d\n", &m, &n) < 0) {
 				std::cout <<  "Error reading from file of type " << type << ": " << filename << ", exiting..." << std::endl;
-            	exit(1);
-            }
+				exit(1);
+			}
 		} else {
-			if (fscanf(file, "%d %d %lg\n", &n, &m, &value) < 0) {
+			if (fscanf(file, "%d %d %lg\n", &m, &n, &value) < 0) {
 				std::cout <<  "Error reading from file of type " << type << ": " << filename << ", exiting..." << std::endl;
-            	exit(1);
+				exit(1);
 			}
 		}
 
 		m--; n--;
-		Element * el = new Element(n, value);
-		
+
 		auto it = occurences.find(m);
 		if (it != occurences.end()) {
-			it->second.push_back(el);
+			it->second.push_back(new Element(n, value));
 			if (max_nz < it->second.size()) {
 				max_nz = it->second.size();
 			}
 		} else {
-			occurences.insert({m, {el}});
+			occurences.insert({m, { new Element(n, value) }});
+		}
+
+		/*
+			If symmetric, add an element with row and col swapped.
+		*/
+		if (is_symmetric) {
+			auto it_b = occurences.find(n);
+			if (it_b != occurences.end()) {
+				it_b->second.push_back(new Element(m, value));
+				if (max_nz < it_b->second.size()) {
+					max_nz = it_b->second.size();
+				}
+			} else {
+				occurences.insert({n, { new Element(m, value) }});
+			}
 		}
 	}
 	
@@ -97,7 +115,6 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 		}
 	}
 	csr->addPointer(pointer);
-
 	
 	return make_pair(csr, ellpack);
 }
@@ -109,7 +126,7 @@ std::string IOmanager::extractName(std::string path) {
 		std::string name = match[0]; 
 		return name.substr(0, name.length() - 4);
 	} else {
-		std::cout << "Couldn't find a proper matrix name for " << path << std::endl;
+		std::cout << "Couldn't find a propper matrix name for " << path << std::endl;
 		return path;
 	}
 }

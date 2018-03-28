@@ -1,0 +1,213 @@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% LaTeX Template: Project Titlepage Modified (v 0.1) by rcx
+%
+% Original Source: http://www.howtotex.com
+% Date: February 2014
+% 
+% This is a title page template which be used for articles & reports.
+% 
+% This is the modified version of the original Latex template from
+% aforementioned website.
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper]{geometry}
+\usepackage[myheadings]{fullpage}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{graphicx, wrapfig, subcaption, setspace, booktabs}
+\usepackage[T1]{fontenc}
+\usepackage[font=small, labelfont=bf]{caption}
+\usepackage{fourier}
+\usepackage{amsmath}
+\usepackage[protrusion=true, expansion=true]{microtype}
+\usepackage[english]{babel}
+\usepackage{sectsty}
+\usepackage{url, lipsum}
+\usepackage{titlesec}
+\usepackage{diagbox}
+\usepackage{pdfpages}
+
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=C++,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breakatwhitespace=true,
+  breaklines=true,
+  tabsize=2
+}
+
+\newcommand{\HRule}[1]{\rule{\linewidth}{#1}}
+\onehalfspacing
+\setcounter{tocdepth}{5}
+\setcounter{secnumdepth}{5}
+\inputencoding{utf8}
+
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+%-------------------------------------------------------------------------------
+% HEADER & FOOTER
+%-------------------------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\setlength\headheight{15pt}
+\fancyhead[L]{António Pedro Araújo Fraga}
+\fancyhead[R]{Cranfield University}
+\fancyfoot[R]{Page \thepage\ of \pageref{LastPage}}
+%-------------------------------------------------------------------------------
+% TITLE PAGE
+%-------------------------------------------------------------------------------
+
+\begin{document}
+
+\title{ \fontsize{40}{90} \textsc{Small Scale for Parallel Programming}
+		\\ [2.0cm]
+		\HRule{0.5pt} \\
+		\LARGE \textbf{Sparse Matrix-Vector Product Kernel}
+		\HRule{2pt} \\ [0.5cm]
+		\normalsize \today \vspace*{5\baselineskip}}
+
+\date{}
+
+\author{
+		\textbf{António Pedro Araújo Fraga} \\
+		\textbf{Student ID: 279654} \\ 
+		\textbf{Cranfield University} \\
+		\textbf{M.Sc. in Software Engineering for Technical Computing
+		} }
+
+\maketitle
+\thispagestyle{empty}
+\newpage
+\tableofcontents
+\thispagestyle{empty}
+\newpage
+\null\vspace{\fill}
+\begin{abstract}
+\normalsize
+The product of a sparse matrix and a vector was calculated both in parallel and sequentially. The parallel procedure was executed with two different technologies, Open Multi-Processing and Compute Unified Device Architecture. Sparse matrices were stored in two different formats, Compressed Sparse Row and Ellpack. Different procedures produced different effects, those effects were discussed and studied. 
+\end{abstract}
+\vspace{\fill}
+\thispagestyle{empty}
+\newpage
+
+%-------------------------------------------------------------------------------
+% Section title formatting
+\sectionfont{\scshape}
+\titleformat{\section}
+{\normalfont\huge\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}
+{\normalfont\large\bfseries}{\thesubsection}{1em}{}
+\titlespacing*{\section}
+{0pt}{5.5ex plus 1ex minus .2ex}{4.3ex plus .2ex}
+\titlespacing*{\subsection}
+{0pt}{5.5ex plus 1ex minus .2ex}{4.3ex plus .2ex}
+%-------------------------------------------------------------------------------
+
+%-------------------------------------------------------------------------------
+% BODY
+%-------------------------------------------------------------------------------
+
+%-------------------------------------------------------------------------------
+% Nomenclature
+%-------------------------------------------------------------------------------
+\begin{table}[tb]
+\caption{Nomenclature}
+\label{tab:notation}
+\centering
+\def\arraystretch{1.5}
+\begin{tabular}{ll}
+Matrix Rows & $m$\\
+Matrix Columns & $n$\\
+\end{tabular}
+\end{table}
+
+%-------------------------------------------------------------------------------
+% Introduction
+%-------------------------------------------------------------------------------
+
+\section*{Introduction}
+\addcontentsline{toc}{section}{Introduction}
+
+\par Bidimensional matrices are often represented in a bidimensional array of values of \textbf{m} by \textbf{n} elements.
+
+
+\subsection*{Problem definition}
+\addcontentsline{toc}{subsection}{Problem definition}
+
+
+\subsection*{Numerical analysis}
+\addcontentsline{toc}{subsection}{Numerical analysis}
+
+
+\section*{Procedures}
+\addcontentsline{toc}{section}{Procedures}
+
+
+\section*{Solution Design}
+\addcontentsline{toc}{section}{Solution Design}
+
+
+\section*{Results \& Discussion}
+\addcontentsline{toc}{section}{Results \& Discussion}
+
+
+\pagebreak
+\section*{Conclusions}
+\addcontentsline{toc}{section}{Conclusions}
+
+ 
+
+%-------------------------------------------------------------------------------
+% REFERENCES
+%-------------------------------------------------------------------------------
+\newpage
+%\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{0}
+
+\bibitem{sparse}
+Raphael Yuster and Uri Zwick, \textit{Fast sparse matrix multiplication}, Available at: <\url{http://www.cs.tau.ac.il/~zwick/papers/sparse.pdf}> [Accessed 28 March 2017]
+
+\bibitem{sparse-gpu}
+B. Neelima1 and Prakash S. Raghavendra, April 2012,  \textit{Effective Sparse Matrix Representation for the
+GPU Architectures}, Available at: <\url{https://pdfs.semanticscholar.org/2d15/dd5d0975fff797397ad31059ec097b659e00.pdf}> [Accessed 28 March 2017]
+
+\end{thebibliography}
+\newpage
+
+\section*{Appendices}
+\addcontentsline{toc}{section}{Appendices}
+
+
+\newpage
+
+\subsection*{Source Code}
+\addcontentsline{toc}{subsection}{Source Code}
+
+
+\addcontentsline{toc}{subsection}{Doxygen Documentation}
+
+\end{document}
+

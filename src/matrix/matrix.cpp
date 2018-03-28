@@ -17,10 +17,12 @@ Matrix::Matrix(int cols, int rows, int nz) {
 	this->elapsed_time = 0.0;
 	this->omp_times_threads = new std::pair<int, double>[NUM_THREADS];
 
-	std::fill(&omp_times_threads[0], &omp_times_threads[NUM_THREADS], std::make_pair(0, 0.0));
 	std::fill(&this->y[0], &this->y[0], 0.0);
 	srand(time(NULL));
 
+	for (int i = 0; i < NUM_THREADS; ++i) {
+		omp_times_threads[i] = std::make_pair(0, 0.0);
+	}
 	for (int i = 0; i < cols; i++) {
 		double integer_part = rand();
 		double decimal_part = rand() / RAND_MAX;

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <regex>
+#include <math.h>
 
 #include "../src/io/mmio.h"
 #include "../src/utils/utils.h"
@@ -12,8 +13,6 @@ double * readArray(std::string filename) {
 	MM_typecode matcode;
 	
 	int M, N; 
-	size_t max_nz = 0;
-	size_t pointer = 0;
 	double * array;
 	std::string type;
 
@@ -52,11 +51,11 @@ double * readArray(std::string filename) {
 
 bool equalSolution(double * b, double * y, int m) {
 	for (int i = 0; i < m; ++i) {
-		std::cout << b[i] << " vs " << y[i] << std::endl;
-		if (b[i] != y[i]) {
+		if (fabs(b[i] - y[i]) > 1.e-06) {
+			std::cout << "At i = " << i << " -> " << b[i] << " vs " << y[i] << std::endl;
+			std::cout << "False" << std::endl;
 			return false;
 		}
 	}
-	std::cout << "true" << std::endl;
 	return true;
 }

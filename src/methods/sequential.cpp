@@ -21,18 +21,15 @@ void sequentialCSR(CSR * &csr) {
 	int * ja = csr->getja();
 	double * as = csr->getas();
 	double * x = csr->getX();
-	double t = 0.0;
+	double temp = 0.0;
 	for (int k = 0; k < NR_RUNS; ++k) {
 		csr->trackTime();
 		for (int i = 0; i < m; ++i) {
-			t = 0.0;
+			temp = 0.0;
 			for (int j = irp[i]; j < irp[i + 1]; ++j) {
-				//std::cout << "(" << i << ", " << j << ") " << as[j] << " * (" << ja[j] << ")" << x[ja[j]] << std::endl;
-				t += as[j] * x[ja[j]];
+				temp += as[j] * x[ja[j]];
 			}
-			std::cout << "t = " << t << std::endl;
-			//pause();
-			csr->y[i] = t;
+			csr->y[i] = temp;
 		}
 		csr->trackTime();
 	}
@@ -45,15 +42,15 @@ void sequentialEllpack(Ellpack * &ellpack) {
 	double ** as = ellpack->getas();
 	double * x = ellpack->getX();
 
-	double t = 0.0;
+	double temp = 0.0;
 	for (int k = 0; k < NR_RUNS; ++k) {
 		ellpack->trackTime();
 		for (int i = 0; i < m; ++i) {
-			t = 0.0;
+			temp = 0.0;
 			for (int j = 0; j < maxnz; ++j) {
-				t += as[i][j] * x[ja[i][j]];
+				temp += as[i][j] * x[ja[i][j]];
 			}
-			ellpack->y[i] = t;
+			ellpack->y[i] = temp;
 		}
 		ellpack->trackTime();
 	}

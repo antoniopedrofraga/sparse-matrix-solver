@@ -9,16 +9,20 @@
  
 __global__ void solveCSR(CSR * csr) {
 	int i = threadIdx.x;
+	double temp = 0.0;
 	for (int j = csr->irp[i]; j < csr->irp[i + 1] - 1; ++j) {
-			csr->y[i] += csr->as[j] * csr->x[csr->ja[j]];
+			temp += csr->as[j] * csr->x[csr->ja[j]];
 	}
+	csr->y[i] = temp;
 }
 
 __global__ void solveEllpack(Ellpack * ellpack) {
 	int i = threadIdx.x;
+	double temp = 0.0;
 	for (int j = 0; j < ellpack->maxnz; ++j) {
-		ellpack->y[i] += ellpack->as[i][j] * ellpack->x[ellpack->ja[i][j]];
+		temp += ellpack->as[i][j] * ellpack->x[ellpack->ja[i][j]];
 	}
+	ellpack->y[i] = temp;
 }
 
 void solveCuda(IOmanager * io, std::string path, CSR * &csr, Ellpack * &ellpack) {
@@ -48,6 +52,9 @@ void solveCuda(IOmanager * io, std::string path, CSR * &csr, Ellpack * &ellpack)
 	}
 	
 	io->exportResults(CUDA, path, csr, ellpack);
+
+	cudaMemcpy(csr, csr_c, csize, cudaMemcpyDeviceToHost); 
+	cudaMemcpy(ellpack, ellpack_c, esize, cudaMemcpyDeviceToHost);
 
 	cudaFree(csr_c);
 	cudaFree(ellpack_c);
