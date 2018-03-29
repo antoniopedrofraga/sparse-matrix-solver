@@ -27,7 +27,7 @@ __global__ void solveEllpack(Ellpack * ellpack) {
 
 void solveCuda(IOmanager * io, std::string path, CSR * &csr, Ellpack * &ellpack) {
 	
-	const int m = csr->getCols();
+	const int m = csr->getRows();
 	const int csize = sizeof(CSR);
 	const int esize = sizeof(Ellpack);
 	
@@ -42,12 +42,12 @@ void solveCuda(IOmanager * io, std::string path, CSR * &csr, Ellpack * &ellpack)
 	for (int k = 0; k < NR_RUNS; ++k) {
 		csr->trackTime();
 		solveCSR<<<1, m>>>(csr_c);
-		cudaThreadSynchronize();
+		cudaDeviceSynchronize();
 		csr->trackTime();
 		
 		ellpack->trackTime();
 		solveEllpack<<<1, m>>>(ellpack_c);
-		cudaThreadSynchronize();
+		cudaDeviceSynchronize();
 		ellpack->trackTime();
 	}
 	

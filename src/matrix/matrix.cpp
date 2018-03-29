@@ -60,8 +60,15 @@ void Matrix::printElapsedTime() {
 
 void Matrix::resetResults() {
 	delete [] this->y;
+	delete [] this->omp_times_threads;
+
+	this->omp_times_threads = new std::pair<int, double>[NUM_THREADS];
 	this->y = new double[cols];
 	std::fill(&this->y[0], &this->y[0], 0.0);
+
+	for (int i = 0; i < NUM_THREADS; ++i) {
+		omp_times_threads[i] = std::make_pair(0, 0.0);
+	}
 
 	this->measures = 0;
 	this->measuring = false;

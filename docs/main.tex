@@ -39,7 +39,7 @@
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
 
-\lstset{frame=tb,
+\lstset{
   language=C++,
   aboveskip=3mm,
   belowskip=3mm,
@@ -53,7 +53,11 @@
   stringstyle=\color{mauve},
   breakatwhitespace=true,
   breaklines=true,
-  tabsize=2
+  tabsize=2,
+  xleftmargin=.2\textwidth, xrightmargin=.2\textwidth,
+  otherkeywords={1, 2, 3, 4, 5, 6, 7, 8, 9, 0},
+  morekeywords=[2]{1, 2, 3, 4, 5, 6, 7, 8, 9, 0},
+  keywordstyle=[2]{\color{purple}}
 }
 
 \newcommand{\HRule}[1]{\rule{\linewidth}{#1}}
@@ -145,10 +149,10 @@ Matrix number of columns & $n$\\
 Sparse matrix & $A$\\
 Vector to be multiplied & $x$\\
 Resulting vector & $b$\\
-Floating operations per second & \textit{FLOPS} \\
+Floating point operations per second & \textit{FLOPS} \\
 Number of non-zero values & \textit{nz} \\
 Maximum number of non-zero values per row & \textit{maxnz} \\
-Computation time of a given method & \textit{T} \\
+Average computation time of a given kernel & \textit{T} \\
 \end{tabular}
 \end{table}
 
@@ -222,6 +226,18 @@ $
 \linebreak
 \end{center}
 
+\par Following a C-like syntax, the $A . x = b$ equation, with \textit{A} following the previously described format, can be solved by,
+
+\begin{lstlisting}
+for (int i = 0; i < m; ++i) {
+		double temp = 0.0;
+		for (int j = irp[i]; j < irp[i + 1]; ++j) {
+				temp += as[j] * x[ja[j]];
+		}
+		y[i] = temp;
+}
+\end{lstlisting}
+
 \par One can represent a matrix in the \textbf{Ellpack} format by defining two \textbf{bidimensional} arrays and one value. Declaring \textit{maxnz} as the maximum number of non-zero values in a given row, one can declare two arrays of \textit{m} rows by \textit{maxnz} elements. Similarly to the CSR format, the first array, \textit{ja}, contains the column index of each value per row. The second array, \textit{as}, contains the given values per row,
 
 \begin{center}
@@ -255,19 +271,33 @@ $
 \end{pmatrix}
 $
 \end{minipage}
+\linebreak
 \end{center}
+
+\par Following a C-like syntax, the $A . x = b$ equation, with \textit{A} following the previously described format, can be solved by,
+
+
+\begin{lstlisting}
+for (int i = 0; i < m; ++i) {
+		double temp = 0.0;
+		for (int j = 0; j < maxnz; ++j) {
+				temp += as[i][j] * x[ja[i][j]];
+		}
+		y[i] = temp;
+}	
+\end{lstlisting}
 
  
 \subsection*{Problem definition}
 \addcontentsline{toc}{subsection}{Problem definition}
 
 \par The problem consisted in analysing the performance produced by a developed kernel. This kernel was able to solve a \textbf{Sparse Matrix-Vector Multiplication}, $A.x = b$. Besides of being able to solve the previous equation, the code should be able to do it in parallel, using \textbf{OpenMP} (Open Multi-Processing) and \textbf{CUDA} (Compute Unified Device Architecture).
-\par A set of matrices obtained from the University of Florida Sparse Matrix Collection\cite{sparse-matrices}, should be used to conduct the performance analysis. The files which contained the matrices were represented in the \textbf{Matrix Market} format, and they were read with software based on a \textbf{Matrix Market} format reader. \cite{matrix-reader} 
+\par A set of matrices obtained from the University of Florida Sparse Matrix Collection\cite{sparse-matrices}, should be used to conduct the performance analysis. The files which contained the matrices were represented in the \textbf{Matrix Market} format, and they were read with software based on an existent reader. \cite{matrix-reader} 
 
 \subsection*{Performance analysis}
 \addcontentsline{toc}{subsection}{Performance analysis}
 
-\par The performance of a given method could be measured in \textit{FLOPS}, the number of floating operations per second. For each method, it was possible to calculated this value by the following formula,
+\par The performance of a given method could be measured in \textit{FLOPS}, the number of floating point operations per second. For each method, it was possible to calculate this value by the following formula,
 
 \begin{center}
 \large
@@ -278,14 +308,21 @@ $
 $
 \end{center}
 
-In order to calculate the resulting vector in the $A.x = b$ equation, one has to execute \textbf{two} floating operations per \textit{non-zero} value. Thus, the \textbf{numerator} expression of the previous division is obtained. The \textbf{denominator} is defined by the time, in seconds, used to solve the equation.
+\par In order to calculate the resulting vector in the $A.x = b$ equation, one has to execute \textbf{two} floating point operations per \textit{non-zero} value. Thus, the \textbf{numerator} expression of the previous division is obtained. The \textbf{denominator} is defined by the time, in seconds, to solve the equation. 
 
-\subsection*{CPUs vs GPUs}
-\addcontentsline{toc}{subsection}{CPUs vs GPUs}
+\subsection*{OpenMP vs CUDA}
+\addcontentsline{toc}{subsection}{OpenMP vs CUDA}
+OpenMP, is a technology that makes use of threads running in \textbf{C}entral \textbf{P}rocessing \textbf{U}nits. These processors, are often few compared to the number of cores present in a \textbf{G}raphics \textbf{P}rocessing \textbf{U}nits device, and the level of parallelism found in these devices is comparatively low to the level of parallelism found on GPUs. One can expect to find hundreds of cores working in parallel in a GPU. 
+\par On other hand, the CUDA technology, developed by NVIDIA, offers a coding interface with a C-like syntax. Not only it allows a fast shared memory between cores within a block, but the possibility of gather data from different blocks as well. These systems allow developers to build applications capable of processing larger sets of data more quickly.\cite{cpu-gpu} 
 
 
 \section*{Procedures}
 \addcontentsline{toc}{section}{Procedures}
+\par A parsing mechanism was developed in order to convert information in the File System into the previously referred formats. The several files were in the Matrix Market format, which the basic information is the size of the matrix, \textbf{M} rows and \textbf{N} columns, and the number of \textit{non-zero} values. These files were followed by information about each one of these values, like row, column and value itself. 
+\par Both 
+
+\subsection*{Parsing}
+\addcontentsline{toc}{subsection}{Parsing}
 
 
 \section*{Solution Design}
@@ -322,6 +359,9 @@ University of Florida, \textit{Sparse Matrix Collection}, Available at: <\url{ht
 \bibitem{matrix-reader}
 Matrix Market, \textit{ANSI C library for Matrix Market I/O}, Available at: <\url{https://math.nist.gov/MatrixMarket/mmio-c.html}> [Accessed 28 March 2017]
 
+\bibitem{cpu-gpu}
+B. N. Manjunatha Reddy, Dr. Shanthala S., Dr. B. R. VijayaKuma, February 2017 \textit{Performance Analysis of GPU V/S CPU for Image
+Processing Applications}, Available at: <\url{https://www.ijraset.com/fileserve.php?FID=6250}> [Accessed 28 March 2017]
 
 
 \end{thebibliography}
