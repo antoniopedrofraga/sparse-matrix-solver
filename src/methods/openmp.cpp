@@ -15,14 +15,15 @@ void openmpCSR(CSR * &csr) {
 	double * as = csr->getas();
 	double * x = csr->getX();
 	
-	int i;
+	int i, j;
+	double temp;
 	for (int t = MIN_THREADS; t <= MAX_THREADS; ++t) {
 		for (int k = 0; k <= NR_RUNS; ++k) {
 			if (k != 0) csr->trackTimeOMP(t);
-			#pragma omp parallel for private(i) schedule(static) num_threads(t)
+			#pragma omp parallel for private(i, j) schedule(static) reduction(+:temp) num_threads(t)
 			for (i = 0; i < m; ++i) {
-				double temp = 0.0;
-				for (int j = irp[i]; j < irp[i + 1]; ++j) {
+				temp = 0.0;
+				for (j = irp[i]; j < irp[i + 1]; ++j) {
 					temp += as[j] * x[ja[j]];
 				}
 				csr->y[i] = temp;
@@ -39,14 +40,15 @@ void openmpEllpack(Ellpack * &ellpack) {
 	double ** as = ellpack->getas();
 	double * x = ellpack->getX();
 
-	int i;
+	int i, j;
+	double temp;
 	for (int t = MIN_THREADS; t <= MAX_THREADS; ++t) {
 		for (int k = 0; k <= NR_RUNS; ++k) {
 			if (k != 0) ellpack->trackTimeOMP(t);
-			#pragma omp parallel for private(i) schedule(static) num_threads(t)
+			#pragma omp parallel for private(i, j) schedule(static) reduction(+:temp) num_threads(t)
 			for (i = 0; i < m; ++i) {
-				double temp = 0.0;
-				for (int j = 0; j < maxnz; ++j) {
+				temp = 0.0;
+				for (j = 0; j < maxnz; ++j) {
 					temp += as[i][j] * x[ja[i][j]];
 				}
 				ellpack->y[i] = temp;
