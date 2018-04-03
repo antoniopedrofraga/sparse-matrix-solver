@@ -6,6 +6,14 @@
 #include "../matrix/ellpack.h"
 #include "../io/iomanager.h"
 #include "../utils/utils.h"
+
+#define cudaCheckError() { \
+	cudaError_t e = cudaGetLastError(); \
+	if(e != cudaSuccess) { \
+		printf("Cuda failure %s:%d: '%s'\n", __FILE__, __LINE__, cudaGetErrorString(e)); \
+		exit(0); \
+	} \
+}
  
 __global__ void solveCSR(CSR * csr) {
 	int i = threadIdx.x;
@@ -43,11 +51,13 @@ void solveCuda(IOmanager * io, std::string path, CSR * &csr, Ellpack * &ellpack)
 		csr->trackTime();
 		solveCSR<<<1, m>>>(csr_c);
 		cudaDeviceSynchronize();
+		cudaCheckError();
 		csr->trackTime();
 		
 		ellpack->trackTime();
 		solveEllpack<<<1, m>>>(ellpack_c);
 		cudaDeviceSynchronize();
+		cudaCheckError();
 		ellpack->trackTime();
 	}
 	

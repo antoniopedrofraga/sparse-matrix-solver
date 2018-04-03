@@ -56,7 +56,7 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 	std::cout << (is_pattern ? "(pattern) " : "(not pattern) ");
 	std::cout << (is_symmetric ? "(symmetric) " : "(not symmetric) ");
 
-	for (int i = 0; i < num_values; i++) {
+	for (int i = 0; i < num_values; ++i) {
 		int m, n;
 		double value = 1;
 		if (is_pattern) {
@@ -83,10 +83,14 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 			occurences.insert({m, { new Element(n, value) }});
 		}
 
+		if (is_symmetric && n == m) {
+			--nz;
+		}
+
 		/*
 			If symmetric, add an element with row and col swapped.
 		*/
-		if (is_symmetric) {
+		if (is_symmetric && n != m) {
 			auto it_b = occurences.find(n);
 			if (it_b != occurences.end()) {
 				it_b->second.push_back(new Element(m, value));
@@ -132,7 +136,7 @@ std::string IOmanager::extractName(std::string path) {
 }
 
 void IOmanager::exportResults(std::string output_file, std::string path, CSR * csr, Ellpack * ellpack) {
-	std::ofstream out; std::string name;
+	std::ofstream out;
 	out.open(output_file, std::ios::out | std::ios_base::app);
 
 	if (out.fail()) {

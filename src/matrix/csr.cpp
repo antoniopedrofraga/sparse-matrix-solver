@@ -28,9 +28,6 @@ void CSR::addPointer(int pointer) {
 }
 
 void CSR::addElement(int col_index, double value) {
-	if (element_index >= getnz()) {
-		std::cout << "Element index = " << element_index << " >= nz = " << getnz() << std::endl;
-	}
 	this->ja[element_index] = col_index;
 	this->as[element_index] = value;
 	this->element_index++;
