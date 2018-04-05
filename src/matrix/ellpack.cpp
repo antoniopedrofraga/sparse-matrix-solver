@@ -26,6 +26,8 @@ Ellpack::~Ellpack() {
 	delete [] this->pointer;
 	delete [] this->ja;
 	delete [] this->as;
+	delete [] this->onedas;
+	delete [] this->onedja;
 };
 
 void Ellpack::addElement(int row_index, int col_index, double value) {
@@ -43,12 +45,34 @@ int ** Ellpack::getja() {
 	return this->ja;
 }
 
+int * Ellpack::get1Dja() {
+	int m = getRows();
+	onedja = new int[m * maxnz];
+	for (int i = 0; i < m; ++i) {
+		for (int j = 0; j < maxnz; ++j) {
+			onedja[i * maxnz + j] = ja[i][j];
+		}
+	}
+	return onedja;
+}
+
 int * Ellpack::getpointers() {
 	return this->pointer;
 }
 
 double ** Ellpack::getas() {
 	return this->as;
+}
+
+double * Ellpack::get1Das() {
+	int m = getRows();
+	onedas = new double[m * maxnz];
+	for (int i = 0; i < m; ++i) {
+		for (int j = 0; j < maxnz; ++j) {
+			onedas[i * maxnz + j] = as[i][j];
+		}
+	}
+	return onedas;
 }
 
 void Ellpack::print() {

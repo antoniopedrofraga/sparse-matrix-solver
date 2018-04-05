@@ -8,12 +8,7 @@
 #include "../utils/utils.h"
 
 
-const int BLOCKS_PER_MP = 32; // Sufficiently large for memory transaction hiding
-int thread_block = 1024; // Must be a power of 2 >= 64
-int max_blocks = 0;   // Blocks in a grid
-int red_sz = 0;       // Size of reduction buffer
-double *o_data = NULL, *d_res_data = NULL, *h_res_data = NULL;
-static struct cudaDeviceProp *prop = NULL;
+int thread_block = 512;
 
 
 void cudaCheckError() {
@@ -24,168 +19,129 @@ void cudaCheckError() {
 	}
 }
 
-float cpuReduction(int n, double * x) {
-	float result = 0.0f;
-	for (int i = 0; i < n; ++i) {
-		result += x[i];
-	}
-	return result;
-}
-
-__device__ void warpReduce(double *sdata, int tid) {
-	sdata[tid] += sdata[tid + 32];
-	sdata[tid] += sdata[tid + 16];
-	sdata[tid] += sdata[tid +  8];
-	sdata[tid] += sdata[tid +  4];
-	sdata[tid] += sdata[tid +  2];
-	sdata[tid] += sdata[tid +  1];
-}
-
-void reduce_alloc_wrk() {
-	if (prop == NULL) {
-		if ((prop = (struct cudaDeviceProp *) malloc(sizeof(struct cudaDeviceProp))) == NULL) {
-			fprintf(stderr,"CUDA Error gpuInit3: not malloced prop\n");
-			return;
-		}
-		cudaSetDevice(0); // BEWARE: you may have more than one device
-		cudaGetDeviceProperties(prop, 0); 
-	}
-	if (thread_block <= 0)
-		std::cerr << "thread_block must be a power of 2 between 64 and 1024" << std::endl;
-
-	if (max_blocks == 0) {
-		int mpCnt;
-		mpCnt = prop->multiProcessorCount;
-		max_blocks = mpCnt * BLOCKS_PER_MP;
-		red_sz = (max_blocks + thread_block - 1) / thread_block;
-	}
-	
-	if (o_data == NULL) cudaMalloc(&o_data, max_blocks * sizeof(double));
-	if (d_res_data == NULL) cudaMalloc(&d_res_data, (red_sz) * sizeof(double));
-	if (h_res_data == NULL) h_res_data = (double *)malloc((red_sz) * sizeof(double));
-}
-
-
-template <unsigned int THD> __global__ void reduceCSR(int n, double *g_idata, double *g_odata) {
+__global__ void solveCSR(int * m, int * irp, int * ja, double * as, double * x, double * y) {
 	extern __shared__ double sdata[];
-		// each thread loads one element from global to shared mem
-	unsigned int tid = threadIdx.x;
-	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-	unsigned int gridSize = blockDim.x * gridDim.x;
-	double temp = 0.0;
+	int i = blockIdx.x * blockDim.x + threadIdx.x;
+	/*int tid = threadIdx.x;
 
-	for (int j = csr->irp[i]; j < csr->irp[i + 1] - 1; ++j) {
-		temp += csr->as[j] * csr->x[csr->ja[j]];
+	int warp = i / 32; 
+	int lane = i & (32 - 1); 
+
+	int row = warp;
+	sdata[tid] = 0;
+
+	if (row < *m) {
+		for (int j = irp[row] + lane ; j < irp[row + 1]; j += 32)
+			sdata[tid] += as[j] * x[ja[j]];
+
+		if (lane < 16) sdata[tid] += sdata[tid + 16];
+		if (lane < 8) sdata[tid] += sdata[tid + 8];
+		if (lane < 4) sdata[tid] += sdata[tid + 4];
+		if (lane < 2) sdata[tid] += sdata[tid + 2];
+		if (lane < 1) sdata[tid] += sdata[tid + 1];
+
+		if (lane == 0)
+			y[row] += sdata[tid];
+	}*/
+	if (i < *m) {
+		double temp = 0.0;
+		for (int j = irp[i]; j < irp[i + 1]; ++j) {
+			temp += as[j] * x[ja[j]];
+		}
+		y[i] = temp;
 	}
-	g_odata[i] = temp;
-
 	__syncthreads();
-		// do reduction in shared mem
-	if (THD >= 1024){ if (tid < 512) { sdata[tid] += sdata[tid + 512]; }  __syncthreads();  }
-	if (THD >= 512) { if (tid < 256) { sdata[tid] += sdata[tid + 256]; }  __syncthreads();  }
-	if (THD >= 256) { if (tid < 128) { sdata[tid] += sdata[tid + 128]; }  __syncthreads();  }
-	if (THD >= 128) { if (tid < 64)  { sdata[tid] += sdata[tid +  64]; }  __syncthreads();  }
-	
-	// write result for this block to global mem
-	//if (tid < 32) warpReduce(sdata,tid);
-	if (tid == 0) g_odata[blockIdx.x] += sdata[0];
 }
 
-void do_gpu_reduce(int m, CSR * c_csr, double *g_odata) {
-	const int shmem_size = thread_block * sizeof(double);
-	int nblocks = (m + thread_block - 1) / thread_block;
-	if (nblocks > max_blocks) nblocks = max_blocks;
-
-	switch(thread_block) {
-		case 1024:
-		reduceCSR<1024><<<nblocks, 1024, shmem_size,0>>>(m, c_csr, g_odata);
-		break;
-		case 512:
-		reduceCSR<512><<<nblocks, 512, shmem_size,0>>>(m, c_csr, g_odata); 
-		break;
-		case 256:
-		reduceCSR<256><<<nblocks, 256, shmem_size,0>>>(m, c_csr, g_odata); 
-		break;
-		case 128:
-		reduceCSR<128><<<nblocks, 128, shmem_size,0>>>(m, c_csr, g_odata); 
-		break;
-		case 64:
-		reduceCSR<64><<<nblocks, 64, shmem_size,0>>>(m, c_csr, g_odata); 
-		break;
-		default:
-		std::cerr << "thread_block must be a power of 2 between 64 and 1024" << std::endl;
+__global__ void solveEllpack(int * m, int * ja, double * as, double * x, double * y, int * maxnz) {
+	int i = blockIdx.x * blockDim.x + threadIdx.x;
+	int rows = *m, maximum_nz = *maxnz;
+	if (i < rows) {
+		double temp = 0.0;
+		for (int j = 0; j < *maxnz; ++j) {
+			temp += as[i * maximum_nz + j] * x[ja[i * maximum_nz + j]];
+		}
+		y[i] = temp;
 	}
-	return;  
+	__syncthreads();
 }
 
-double gpu_reduce(int m, double *d_v) {
-	reduce_alloc_wrk();
-	cudaMemset((void *)o_data, 0, max_blocks * sizeof(double));
-	cudaMemset((void *)d_res_data, 0, red_sz * sizeof(double));
+void allocateCSR(CSR * &csr, int * &irp, int * &ja, double * &as, double * &x, double *&y, int &m, int &n) {
+	int nz = csr->getnz();
 
-	do_gpu_reduce(m, d_v, o_data);
-	do_gpu_reduce(max_blocks, o_data, d_res_data);
-	cudaError_t err = cudaMemcpy(h_res_data, d_res_data, red_sz * sizeof(double), cudaMemcpyDeviceToHost);
-	return(cpuReduction(red_sz, h_res_data));
+	cudaMalloc((void**)&irp, sizeof(int) * (nz + 1));
+	cudaMalloc((void**)&ja, sizeof(int) * nz);
+	cudaMalloc((void**)&as, sizeof(double) * nz);
+	cudaMalloc((void**)&x, sizeof(double) * n);
+	cudaMalloc((void**)&y, sizeof(double) * n);
+	cudaMemcpy(irp, csr->getirp(), sizeof(int) * (nz + 1), cudaMemcpyHostToDevice);
+	cudaMemcpy(ja, csr->getja(), sizeof(int) * nz, cudaMemcpyHostToDevice);
+	cudaMemcpy(as, csr->getas(), sizeof(double) * nz, cudaMemcpyHostToDevice);
+	cudaMemcpy(x, csr->getX(), sizeof(double) * n, cudaMemcpyHostToDevice);
+	cudaMemcpy(y, csr->y, sizeof(double) * n, cudaMemcpyHostToDevice);
 }
 
+void allocateEllpack(Ellpack * &ellpack, int * &ja, double * &as, double * &x, double * &y, int * &maxnz, int &m, int &n) {
+	int host_maxnz = ellpack->getmaxnz();
+	int * host_ja = ellpack->get1Dja();
+	double * host_as = ellpack->get1Das();
 
-__global__ void solveCSR(CSR * csr) {
-	int i = threadIdx.x;
-	double temp = 0.0;
-	for (int j = csr->irp[i]; j < csr->irp[i + 1] - 1; ++j) {
-		temp += csr->as[j] * csr->x[csr->ja[j]];
-	}
-	csr->y[i] = temp;
+	cudaMalloc((void**)&ja, sizeof(int) * m * host_maxnz);
+	cudaMalloc((void**)&as,  sizeof(double) * m * host_maxnz);
+	cudaMalloc((void**)&x, sizeof(double) * m);
+	cudaMalloc((void**)&y, sizeof(double) * m);
+	cudaMalloc((void**)&maxnz, sizeof(int));
+	cudaMemcpy(ja, host_ja, sizeof(int) * m * host_maxnz, cudaMemcpyHostToDevice);
+	cudaMemcpy(as, host_as, sizeof(double) * m * host_maxnz, cudaMemcpyHostToDevice);
+	cudaMemcpy(x, ellpack->getX(), sizeof(double) * m, cudaMemcpyHostToDevice);
+	cudaMemcpy(y, ellpack->y, sizeof(double) * m, cudaMemcpyHostToDevice);
+	cudaMemcpy(maxnz, &host_maxnz, sizeof(int), cudaMemcpyHostToDevice);
 }
 
-__global__ void solveEllpack(Ellpack * ellpack) {
-	int i = threadIdx.x;
-	double temp = 0.0;
-	for (int j = 0; j < ellpack->maxnz; ++j) {
-		temp += ellpack->as[i][j] * ellpack->x[ellpack->ja[i][j]];
-	}
-	ellpack->y[i] = temp;
+void collectResults(CSR * &csr, Ellpack * &ellpack, double * &csr_y, double * &ellpack_y, int &n) {
+	cudaMemcpy(csr->y, csr_y, sizeof(double) * n, cudaMemcpyDeviceToHost);
+	cudaMemcpy(ellpack->y, ellpack_y, sizeof(double) * n, cudaMemcpyDeviceToHost);
 }
+
 
 void solveCuda(IOmanager * io, std::string path, CSR * &csr, Ellpack * &ellpack) {
 	
-	const int m = csr->getRows();
-	const int csize = sizeof(CSR);
-	const int esize = sizeof(Ellpack);
-	
-	CSR * csr_c;
-	Ellpack * ellpack_c;
-
-	reduce_alloc_wrk();
-
+	int m = csr->getRows();
+	int n = csr->getCols();
 	const int shmem_size = thread_block * sizeof(double);
-	int nblocks = (m + thread_block - 1) / thread_block;
-	if (nblocks > max_blocks) nblocks = max_blocks;
 
-	cudaMalloc((void**)&csr_c, csize);
-	cudaMalloc((void**)&ellpack_c, esize);
-	cudaMemcpy(csr_c, csr, csize, cudaMemcpyHostToDevice); 
-	cudaMemcpy(ellpack_c, ellpack, esize, cudaMemcpyHostToDevice);
+	int n_blocks = m / thread_block;
+
+	if (m % thread_block > 0.0) {
+		n_blocks++;
+	}
+
+	int * csr_irp, * csr_ja, * ellpack_ja, * maxnz, * rows;
+	double * csr_as, * csr_x, * csr_y, * ellpack_as, * ellpack_x, * ellpack_y;
+	
+	allocateCSR(csr, csr_irp, csr_ja, csr_as, csr_x, csr_y, m, n);
+	allocateEllpack(ellpack, ellpack_ja, ellpack_as, ellpack_x, ellpack_y, maxnz, m, n);
+
+	cudaMalloc((void**)&rows, sizeof(int));
+	cudaMemcpy(rows, &m, sizeof(int), cudaMemcpyHostToDevice);
 
 	
 	for (int k = 0; k < NR_RUNS; ++k) {
 		csr->trackTime();
-		solveCSR<<<1, m>>>(csr_c);
-		cudaCheckError();
+		solveCSR<<<n_blocks, thread_block, shmem_size>>>(rows, csr_irp, csr_ja, csr_as, csr_x, csr_y);
 		csr->trackTime();
+		cudaMemset(csr_y, 0, sizeof(double) * m);
+		cudaCheckError();
 		
 		ellpack->trackTime();
-		solveEllpack<<<1, m>>>(ellpack_c);
-		cudaCheckError();
+		solveEllpack<<<n_blocks, thread_block>>>(rows, ellpack_ja, ellpack_as, ellpack_x, ellpack_y, maxnz);
 		ellpack->trackTime();
+		cudaMemset(ellpack_y, 0, sizeof(double) * m);
+		cudaCheckError();
 	}
+
+	collectResults(csr, ellpack, csr_y, ellpack_y, n);
+	cudaCheckError();
 	
 	io->exportResults(CUDA, path, csr, ellpack);
-
-	cudaMemcpy(csr, csr_c, csize, cudaMemcpyDeviceToHost); 
-	cudaMemcpy(ellpack, ellpack_c, esize, cudaMemcpyDeviceToHost);
-
-	cudaFree(csr_c);
-	cudaFree(ellpack_c);
 }

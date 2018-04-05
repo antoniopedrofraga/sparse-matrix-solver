@@ -6,13 +6,13 @@
 #include "../utils/utils.h"
 
 class Matrix {
+public:
 	int cols, rows, nz;
 	long long mflops;
 	double start, done;
 	double elapsed_time, measures;
 	std::pair<int, double> *omp_times_threads;
 	bool measuring;
-public:
 	double * x, * y;
 	Matrix(int cols, int rows, int nz);
 	void trackTimeOMP(int num_threads);

@@ -8,8 +8,8 @@ Matrix::Matrix(int cols, int rows, int nz) {
 	this->nz = nz;
 	this->rows = rows;
 	this->cols = cols;
-	this->x = new double[cols];
-	this->y = new double[cols];
+	this->x = new double[rows];
+	this->y = new double[rows];
 	
 	this->measures = 0;
 	this->measuring = false;

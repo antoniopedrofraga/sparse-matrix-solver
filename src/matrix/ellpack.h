@@ -5,8 +5,8 @@
 
 class Ellpack : public Matrix {
 public:
-	int maxnz, ** ja, * pointer;
-	double ** as;
+	int maxnz, ** ja, * pointer, * onedja;
+	double ** as, * onedas;
 	
 	Ellpack(int cols, int rows, int maxnz, int nz);
 	~Ellpack();
@@ -15,8 +15,10 @@ public:
 
 	int getmaxnz();
 	int ** getja();
+	int * get1Dja();
 	int * getpointers();
 	double ** getas();
+	double * get1Das();
 	void print();
 };
 

@@ -49,12 +49,12 @@ double * readArray(std::string filename) {
 	return array;
 }
 
-bool equalSolution(double * b, double * y, int m) {
+bool equalSolution(double * &b, double * &y, int &m) {
 	for (int i = 0; i < m; ++i) {
-		if (fabs(b[i] - y[i]) > 1.e-06) {
+		if (fabs(b[i] - y[i]) > 1.e-05) {
 			std::cout << "At i = " << i << " -> " << b[i] << " vs " << y[i] << std::endl;
 			std::cout << "False" << std::endl;
-			return false;
+			//return false;
 		}
 	}
 	return true;

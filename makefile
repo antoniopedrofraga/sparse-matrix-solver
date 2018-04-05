@@ -10,7 +10,7 @@ run-tests:
 	./bin/tests
 run:
 	rm -f outputs/*.csv
-	bin/solver matrices/adder_dcop_32.mtx
+	bin/solver matrices/cage4.mtx
 runall:
 	rm -f outputs/*.csv
 	bin/solver $(wildcard matrices/*.mtx)
