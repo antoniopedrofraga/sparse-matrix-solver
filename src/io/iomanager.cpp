@@ -48,17 +48,16 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 		exit(1);
 	}
 
+	nz = num_values;
 	bool is_symmetric = mm_is_symmetric(matcode);
 	bool is_pattern = mm_is_pattern(matcode);
-
-	nz = is_symmetric ? num_values * 2 : num_values;
 
 	std::cout << (is_pattern ? "(pattern) " : "(not pattern) ");
 	std::cout << (is_symmetric ? "(symmetric) " : "(not symmetric) ");
 
 	for (int i = 0; i < num_values; ++i) {
 		int m, n;
-		double value = 1;
+		double value = 1.0;
 		if (is_pattern) {
 			if (fscanf(file, "%d %d\n", &m, &n) < 0) {
 				std::cout <<  "Error reading from file of type " << type << ": " << filename << ", exiting..." << std::endl;
@@ -83,14 +82,11 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 			occurences.insert({m, { new Element(n, value) }});
 		}
 
-		if (is_symmetric && n == m) {
-			--nz;
-		}
-
 		/*
 			If symmetric, add an element with row and col swapped.
 		*/
 		if (is_symmetric && n != m) {
+			++nz;
 			auto it_b = occurences.find(n);
 			if (it_b != occurences.end()) {
 				it_b->second.push_back(new Element(m, value));
@@ -102,7 +98,7 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 			}
 		}
 	}
-	
+
 	csr = new CSR(N, M, nz);
 	ellpack = new Ellpack(N, M, max_nz, nz);
 	
@@ -144,10 +140,14 @@ void IOmanager::exportResults(std::string output_file, std::string path, CSR * c
 		return;
 	}
 
-	csr->printElapsedTime();
+	if (output_file != CUDA) {
+		csr->printElapsedTime();
+		out << csr->getnz() << " " << csr->getMegaFlops() << " " << ellpack->getMegaFlops() << std::endl;
+	} else {
+		csr->printElapsedCUDATime();
+		out << csr->getnz() << " " << csr->getScalarMegaFlops() << " " << csr->getVecMinMegaFlops() << " " << ellpack->getMegaFlops() << std::endl;
+	}
 	ellpack->printElapsedTime();
-
-	out << csr->getnz() << " " << csr->getMegaFlops() << " " << ellpack->getMegaFlops() << std::endl;
 
 	if (output_file == OPENMP) {
 		this->exportOMPResults(path, csr, ellpack);

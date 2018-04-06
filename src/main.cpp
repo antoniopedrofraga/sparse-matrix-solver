@@ -29,7 +29,7 @@ int main(int argc, char ** argv) {
 		io->exportResults(OPENMP, path, csr, ellpack);
 		csr->resetResults();
 		ellpack->resetResults();
-		std::cout << std::endl; 
+		std::cout << std::endl;
 
 		std::cout << "CUDA ";
 		solveCuda(io, path, csr, ellpack);

@@ -106,7 +106,7 @@ TEST_CASE( "Testing solver with PR02R", "[Solver]" ) {
 	solveCuda(io, path, csr, ellpack);
 
 	REQUIRE(equalSolution(b, csr->y, m));
-	//REQUIRE(equalSolution(b, ellpack->y, m));
+	REQUIRE(equalSolution(b, ellpack->y, m));
 	std::cout << std::endl; 
 
 	delete csr;

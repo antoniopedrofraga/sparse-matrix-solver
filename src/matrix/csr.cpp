@@ -6,6 +6,8 @@ CSR::CSR(int cols, int rows, int nz) : Matrix(cols, rows, nz) {
 	this->as = new double[nz];
 	this->irp = new int[cols + 1];
 	this->element_index = 0;
+
+	this->cuda_times_csr = std::make_pair(0.0, 0.0);
 	
 	this->irp_size = 0;
 
@@ -63,4 +65,33 @@ void CSR::print() {
 		std::cout << as[i] << " ";
 	}
 	std::cout << std::endl;
+}
+
+unsigned long long CSR::getScalarMegaFlops() {
+	return 2.0 * (unsigned long long)this->nz / ((double)this->cuda_times_csr.first / (unsigned long long)this->measures) / 1000.0;
+}
+
+unsigned long long CSR::getVecMinMegaFlops() {
+	return 2.0 * (unsigned long long)this->nz / ((double)this->cuda_times_csr.second / (unsigned long long)this->measures) / 1000.0;
+}
+
+void CSR::trackCSRTime(int method) {
+	if (this->measuring == false) {
+		this->start = omp_get_wtime() * 1000;
+		this->measuring = true;
+	} else {
+		this->done = omp_get_wtime() * 1000;
+		if (method == SCALAR) {
+			this->cuda_times_csr.first += done - start;
+			this->measures++;
+		} else if (method == VECTOR_MINING) {
+			this->cuda_times_csr.second += done - start;
+		}
+		this->measuring = false;
+	}
+}
+
+void CSR::printElapsedCUDATime() {
+	std::cout << " SCALAR(" << ((double)this->cuda_times_csr.first / (double)this->measures) << " ms " << this->measures << " measures) ";
+	std::cout << " VM(" << ((double)this->cuda_times_csr.second / (double)this->measures) << " ms " << this->measures << " measures) ";
 }

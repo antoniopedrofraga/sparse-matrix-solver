@@ -6,6 +6,7 @@
 
 class CSR: public Matrix {
 	int element_index; 
+	std::pair<double, double> cuda_times_csr;
 public:
 	size_t irp_size;
 	int nz, * ja, * irp;
@@ -20,6 +21,11 @@ public:
 	double * getas();
 	int * getirp();
 	void print();
+
+	unsigned long long getScalarMegaFlops();
+	unsigned long long getVecMinMegaFlops();
+	void trackCSRTime(int method);
+	void printElapsedCUDATime();
 };
 
 #endif

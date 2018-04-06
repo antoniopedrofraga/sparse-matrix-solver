@@ -17,4 +17,10 @@ const int MIN_THREADS = 2;
 const int MAX_THREADS = 16;
 const int NUM_THREADS = MAX_THREADS - MIN_THREADS + 1;
 
+const int SCALAR = 0;
+const int VECTOR_MINING = 1;
+
+
+int nextPowerOf2(int n);
+
 #endif
