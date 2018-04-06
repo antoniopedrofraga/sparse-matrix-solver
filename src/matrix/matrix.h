@@ -9,7 +9,7 @@ class Matrix {
 public:
 	int cols, rows, nz;
 	long long mflops;
-	double start, done;
+	double start, done, mean, average_deviation;
 	double elapsed_time, measures;
 	std::pair<int, double> *omp_times_threads;
 	bool measuring;

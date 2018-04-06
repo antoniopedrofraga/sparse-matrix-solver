@@ -20,6 +20,8 @@ const int NUM_THREADS = MAX_THREADS - MIN_THREADS + 1;
 const int SCALAR = 0;
 const int VECTOR_MINING = 1;
 
+const int MAX_N_BLOCKS = 65535;
+
 
 int nextPowerOf2(int n);
 

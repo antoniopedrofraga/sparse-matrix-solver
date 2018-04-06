@@ -12,6 +12,7 @@
 #include <vector>
 #include <string>
 #include <regex>
+#include <math.h>
 
 IOmanager::IOmanager() {}
 
@@ -101,11 +102,23 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 
 	csr = new CSR(N, M, nz);
 	ellpack = new Ellpack(N, M, max_nz, nz);
-	
+
+	for (auto map_it = occurences.begin(); map_it != occurences.end(); map_it++) {
+		int row_index = map_it->first;
+		std::vector<Element*> elements = map_it->second;
+		csr->mean += elements.size();
+		ellpack->mean += elements.size();
+	}
+	csr->mean /= occurences.size();
+	ellpack->mean /= occurences.size();
+
 	for (auto map_it = occurences.begin(); map_it != occurences.end(); map_it++) {
 		int row_index = map_it->first;
 		std::vector<Element*> elements = map_it->second;
 		csr->addPointer(pointer);
+
+		csr->average_deviation += fabs(csr->mean - elements.size());
+		ellpack->average_deviation += fabs(ellpack->mean - elements.size());
 		for (size_t i = 0; i < elements.size(); ++i) {
 			double value = elements[i]->getValue();
 			int col_index = elements[i]->getRow();
@@ -115,7 +128,13 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 		}
 	}
 	csr->addPointer(pointer);
-	
+	csr->average_deviation /= occurences.size();
+	csr->average_deviation = csr->average_deviation / csr->mean * 100;
+	ellpack->average_deviation /= occurences.size();
+	ellpack->average_deviation = ellpack->average_deviation / ellpack->mean * 100;
+
+	std::cout << "(Average nz deviation: " << csr->average_deviation << "%) ";
+
 	return make_pair(csr, ellpack);
 }
 

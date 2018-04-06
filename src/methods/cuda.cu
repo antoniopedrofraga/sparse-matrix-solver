@@ -10,7 +10,8 @@
 #include "../utils/utils.h"
 
 
-int thread_block = 1024;
+int vm_thr_block = 512;
+int scalar_thr_block = 512;
 
 
 void cudaCheckError() {
@@ -81,7 +82,7 @@ void allocateCSR(CSR * &csr, int * &irp, int * &ja, double * &as, double * &x, d
 	cudaMalloc((void**)&x, sizeof(double) * n);
 	cudaMalloc((void**)&y, sizeof(double) * n);
 
-	cudaMemcpy(irp, csr->irp, sizeof(int) * (nz + 1), cudaMemcpyHostToDevice);
+	cudaMemcpy(irp, csr->irp, sizeof(int) * (n + 1), cudaMemcpyHostToDevice);
 	cudaMemcpy(ja, csr->getja(), sizeof(int) * nz, cudaMemcpyHostToDevice);
 	cudaMemcpy(as, csr->getas(), sizeof(double) * nz, cudaMemcpyHostToDevice);
 	cudaMemcpy(x, csr->getX(), sizeof(double) * n, cudaMemcpyHostToDevice);
@@ -128,15 +129,27 @@ void collectResults(CSR * &csr, Ellpack * &ellpack, double * &csr_y, double * &e
 
 
 void solveCuda(IOmanager * io, std::string path, CSR * &csr, Ellpack * &ellpack) {
-	
+
 	int m = csr->getRows();
 	int n = csr->getCols();
-	const int shmem_size = thread_block * sizeof(double);
-
-	int n_blocks = (m * 32) / thread_block;
-	if (m % thread_block > 0.0) {
-		n_blocks++;
+	int n_blocks_scalar = m / scalar_thr_block;
+	if (m % scalar_thr_block > 0.0) {
+		n_blocks_scalar++;
 	}
+
+	int n_blocks_vm = (m * 32) / vm_thr_block;
+	if ((m * 32) % vm_thr_block > 0.0) {
+		n_blocks_vm++;
+	}
+	if (n_blocks_vm > MAX_N_BLOCKS) {
+		vm_thr_block *= 2;
+		n_blocks_vm = (m * 32) / vm_thr_block;
+		if ((m * 32) % vm_thr_block > 0.0) {
+			n_blocks_vm++;
+		}
+	}
+
+	const int shmem_size = vm_thr_block * sizeof(double);
 
 	int * csr_irp, * csr_ja, * ellpack_ja, * maxnz, * rows;
 	double * csr_as, * csr_x, * csr_y, * ellpack_as, * ellpack_x, * ellpack_y;
@@ -150,19 +163,19 @@ void solveCuda(IOmanager * io, std::string path, CSR * &csr, Ellpack * &ellpack)
 	
 	for (int k = 0; k < NR_RUNS + 1; ++k) {
 		if (k != 0) csr->trackCSRTime(SCALAR);
-		scalarCSR<<<n_blocks, thread_block>>>(rows, csr_irp, csr_ja, csr_as, csr_x, csr_y);
+		scalarCSR<<<n_blocks_scalar, scalar_thr_block>>>(rows, csr_irp, csr_ja, csr_as, csr_x, csr_y);
 		cudaDeviceSynchronize();
 		if (k != 0) csr->trackCSRTime(SCALAR);
 		cudaCheckError();
 
 		if (k != 0) csr->trackCSRTime(VECTOR_MINING);
-		vectorMiningCSR<<<n_blocks, thread_block, shmem_size>>>(rows, csr_irp, csr_ja, csr_as, csr_x, csr_y);
+		vectorMiningCSR<<<n_blocks_vm, vm_thr_block, shmem_size>>>(rows, csr_irp, csr_ja, csr_as, csr_x, csr_y);
 		cudaDeviceSynchronize();
 		if (k != 0) csr->trackCSRTime(VECTOR_MINING);
 		cudaCheckError();
 		
 		if (k != 0) ellpack->trackTime();
-		scalarEllpack<<<n_blocks, thread_block>>>(rows, ellpack_ja, ellpack_as, ellpack_x, ellpack_y, maxnz);
+		scalarEllpack<<<n_blocks_scalar, scalar_thr_block>>>(rows, ellpack_ja, ellpack_as, ellpack_x, ellpack_y, maxnz);
 		cudaDeviceSynchronize();
 		if (k != 0) ellpack->trackTime();
 		cudaCheckError();
@@ -176,9 +189,9 @@ void solveCuda(IOmanager * io, std::string path, CSR * &csr, Ellpack * &ellpack)
 	collectResults(csr, ellpack, csr_y, ellpack_y, n);
 	cudaCheckError();
 
-	/*deallocateCSR(csr_irp, csr_ja, csr_as, csr_x, csr_y);
+	deallocateCSR(csr_irp, csr_ja, csr_as, csr_x, csr_y);
 	deallocateEllpack(ellpack_ja, ellpack_as, ellpack_x, ellpack_y, maxnz);
-	cudaCheckError();*/
+	cudaCheckError();
 	
 	io->exportResults(CUDA, path, csr, ellpack);
 }

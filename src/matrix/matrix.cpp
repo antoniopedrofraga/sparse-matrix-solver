@@ -8,6 +8,9 @@ Matrix::Matrix(int cols, int rows, int nz) {
 	this->nz = nz;
 	this->rows = rows;
 	this->cols = cols;
+	this->mean = 0.0;
+	this->average_deviation = 0.0;
+
 	this->x = new double[rows];
 	this->y = new double[rows];
 	
