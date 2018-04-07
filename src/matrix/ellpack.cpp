@@ -1,16 +1,17 @@
 #include "ellpack.h"
 #include <iostream>
+#include <climits>
 
 Ellpack::Ellpack(int cols, int rows, int maxnz, int nz) : Matrix(cols, rows, nz) {
 	this->maxnz = maxnz;
-	this->ja = new int * [rows];
+	this->ja = alloc2d(rows, maxnz);
 	this->pointer = new int[rows];
-	this->as = new double * [rows];
-	
+	this->as = alloc2dDouble(rows, maxnz);
+	/*
 	for (int i = 0; i < rows; ++i) {
 		this->ja[i] = new int[maxnz];
 		this->as[i] = new double[maxnz];
-	}
+	}*/
 	
 	std::fill(&this->pointer[0], &this->pointer[rows], 0);
 	
@@ -47,13 +48,20 @@ int ** Ellpack::getja() {
 
 int * Ellpack::get1Dja() {
 	int m = getRows();
-	onedja = new int[m * maxnz];
+	int mnz = getmaxnz();
+	onedja = new int[m * mnz];
 	for (int i = 0; i < m; ++i) {
-		for (int j = 0; j < maxnz; ++j) {
-			onedja[i * maxnz + j] = ja[i][j];
+		for (int j = 0; j < mnz; ++j) {
+			onedja[i * mnz + j] = ja[i][j];
 		}
 	}
 	return onedja;
+}
+
+bool Ellpack::toLargeForCUDA() {
+	__int128 m = getRows();
+	__int128 mnz = getmaxnz();
+	return m * mnz > INT_MAX;
 }
 
 int * Ellpack::getpointers() {
@@ -66,10 +74,11 @@ double ** Ellpack::getas() {
 
 double * Ellpack::get1Das() {
 	int m = getRows();
-	onedas = new double[m * maxnz];
+	int mnz = getmaxnz();
+	onedas = new double[m * mnz];
 	for (int i = 0; i < m; ++i) {
-		for (int j = 0; j < maxnz; ++j) {
-			onedas[i * maxnz + j] = as[i][j];
+		for (int j = 0; j < mnz; ++j) {
+			onedas[i * mnz + j] = as[i][j];
 		}
 	}
 	return onedas;

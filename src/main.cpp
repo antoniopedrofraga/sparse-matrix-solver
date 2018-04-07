@@ -13,7 +13,7 @@ int main(int argc, char ** argv) {
 		Ellpack * ellpack = matrices.second;
 		std::cout << std::endl;
 
-		std::cout << "Sequential ";
+		/*std::cout << "Sequential ";
 		sequentialCSR(csr);
 		sequentialEllpack(ellpack);
 
@@ -29,7 +29,7 @@ int main(int argc, char ** argv) {
 		io->exportResults(OPENMP, path, csr, ellpack);
 		csr->resetResults();
 		ellpack->resetResults();
-		std::cout << std::endl;
+		std::cout << std::endl;*/
 
 		std::cout << "CUDA ";
 		solveCuda(io, path, csr, ellpack);

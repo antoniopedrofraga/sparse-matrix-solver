@@ -58,7 +58,11 @@ unsigned long long Matrix::getMegaFlops(int i) {
 }
 
 void Matrix::printElapsedTime() {
-	std::cout << " (" << ((double)this->elapsed_time / (double)this->measures) << " ms " << this->measures << " measures) ";
+	if (elapsed_time == 0.0) {
+		std::cout << " (NO RUN) ";
+	} else {
+		std::cout << " (" << ((double)this->elapsed_time / (double)this->measures) << " ms " << this->measures << " measures) ";
+	}
 }
 
 void Matrix::resetResults() {

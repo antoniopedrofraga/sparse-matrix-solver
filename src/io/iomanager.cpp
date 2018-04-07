@@ -134,6 +134,7 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 	ellpack->average_deviation = ellpack->average_deviation / ellpack->mean * 100;
 
 	std::cout << "(Average nz deviation: " << csr->average_deviation << "%) ";
+	std::cout << (ellpack->toLargeForCUDA() ? "(too large for CUDA)" : "");
 
 	return make_pair(csr, ellpack);
 }

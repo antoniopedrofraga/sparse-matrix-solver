@@ -23,6 +23,8 @@ const int VECTOR_MINING = 1;
 const int MAX_N_BLOCKS = 65535;
 
 
-int nextPowerOf2(int n);
+int ** alloc2d(int n, int m);
+double ** alloc2dDouble(int n, int m);
+
 
 #endif

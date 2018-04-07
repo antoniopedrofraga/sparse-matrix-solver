@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <iostream>
-#include <thrust/device_vector.h>
+#include <cuda.h>
+#include <cuda_runtime_api.h>
 
 
 #include "../matrix/matrix.h"
@@ -8,16 +9,16 @@
 #include "../matrix/ellpack.h"
 #include "../io/iomanager.h"
 #include "../utils/utils.h"
+#include "../CuArrays"
 
 
-int vm_thr_block = 512;
-int scalar_thr_block = 512;
+int vm_thr_block = 512, scalar_thr_block = 512, n_blocks_vm, n_blocks_scalar;
 
 
-void cudaCheckError() {
+void cudaCheckError(int line) {
 	cudaError_t e = cudaGetLastError();
 	if(e != cudaSuccess) {
-		printf("Cuda failure %s:%d: '%s'\n", __FILE__, __LINE__, cudaGetErrorString(e));
+		printf("Cuda failure %s:%d: '%s'\n", __FILE__, line, cudaGetErrorString(e));
 		exit(0);
 	}
 }
@@ -33,41 +34,40 @@ __global__ void scalarCSR(int * m, int * irp, int * ja, double * as, double * x,
 	}
 }
 
-__global__ void vectorMiningCSR(int * m, int * irp, int * ja, double * as, double * x, double * y) {
-	extern __shared__ double sdata[];
+__global__ void vectorMiningCSR(int * m, int * d_warp_size, int * irp, int * ja, double * as, double * x, double * y) {
+	extern __shared__ volatile double sdata[];
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 	int tid = threadIdx.x;
+	int warp_size = *d_warp_size;
 
-	int warp = i / 32; 
-	int lane = i & (32 - 1); 
+	int warp = i / warp_size; 
+	int lane = i & (warp_size - 1); 
 	int row = warp;
 
 	sdata[tid] = 0;
 
 	if (row < *m) {
-		for (int j = irp[row] + lane ; j < irp[row + 1]; j += 32)
+		for (int j = irp[row] + lane ; j < irp[row + 1]; j += warp_size)
 			sdata[tid] += as[j] * x[ja[j]];
 
-		__syncthreads();
-
-		if (lane < 16) { sdata[tid] += sdata[tid + 16]; __syncthreads(); }
-		if (lane < 8) { sdata[tid] += sdata[tid + 8]; __syncthreads(); }
-		if (lane < 4) { sdata[tid] += sdata[tid + 4]; __syncthreads(); }
-		if (lane < 2) { sdata[tid] += sdata[tid + 2]; __syncthreads(); }
-		if (lane < 1) { sdata[tid] += sdata[tid + 1]; __syncthreads(); }
+		if (warp_size == 32) { if (lane < 16) { sdata[tid] += sdata[tid + 16]; } }
+		if (lane < 8) { sdata[tid] += sdata[tid + 8]; }
+		if (lane < 4) { sdata[tid] += sdata[tid + 4]; }
+		if (lane < 2) { sdata[tid] += sdata[tid + 2]; }
+		if (lane < 1) { sdata[tid] += sdata[tid + 1]; }
 
 		if (lane == 0)
 			y[row] += sdata[tid];
 	}
 }
 
-__global__ void scalarEllpack(int * m, int * ja, double * as, double * x, double * y, int * maxnz) {
+__global__ void scalarEllpack(int * m, int ** ja, double ** as, double * x, double * y, int * maxnz) {
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
-	int rows = *m, maximum_nz = *maxnz;
+	int rows = *m;
 	if (i < rows) {
 		double temp = 0.0;
 		for (int j = 0; j < *maxnz; ++j) {
-			temp += as[i * maximum_nz + j] * x[ja[i * maximum_nz + j]];
+			temp += as[i][j] * x[ja[i][j]];
 		}
 		y[i] = temp;
 	}
@@ -89,18 +89,20 @@ void allocateCSR(CSR * &csr, int * &irp, int * &ja, double * &as, double * &x, d
 	cudaMemcpy(y, csr->y, sizeof(double) * n, cudaMemcpyHostToDevice);
 }
 
-void allocateEllpack(Ellpack * &ellpack, int * &ja, double * &as, double * &x, double * &y, int * &maxnz, int &m, int &n) {
+void allocateEllpack(Ellpack * &ellpack, int ** &ja, double ** &as, double * &x, double * &y, int * &maxnz, int &m, int &n) {
 	int host_maxnz = ellpack->getmaxnz();
 	int * host_ja = ellpack->get1Dja();
 	double * host_as = ellpack->get1Das();
 
-	cudaMalloc((void**)&ja, sizeof(int) * m * host_maxnz);
-	cudaMalloc((void**)&as,  sizeof(double) * m * host_maxnz);
+	size_t pitchJA, pitchAS;
+	cudaMallocPitch((void**)&ja, &pitchJA, host_maxnz * sizeof(double), m);
+	cudaMallocPitch((void**)&as, &pitchAS, host_maxnz * sizeof(double), m);
 	cudaMalloc((void**)&x, sizeof(double) * m);
 	cudaMalloc((void**)&y, sizeof(double) * m);
 	cudaMalloc((void**)&maxnz, sizeof(int));
-	cudaMemcpy(ja, host_ja, sizeof(int) * m * host_maxnz, cudaMemcpyHostToDevice);
-	cudaMemcpy(as, host_as, sizeof(double) * m * host_maxnz, cudaMemcpyHostToDevice);
+
+	cudaMemcpy2D(ja, pitchJA, host_ja, host_maxnz * sizeof(double), host_maxnz * sizeof(double), m, cudaMemcpyHostToDevice);
+	cudaMemcpy2D(as, pitchAS, host_as, host_maxnz * sizeof(double), host_maxnz * sizeof(double), m, cudaMemcpyHostToDevice);
 	cudaMemcpy(x, ellpack->getX(), sizeof(double) * m, cudaMemcpyHostToDevice);
 	cudaMemcpy(y, ellpack->y, sizeof(double) * m, cudaMemcpyHostToDevice);
 	cudaMemcpy(maxnz, &host_maxnz, sizeof(int), cudaMemcpyHostToDevice);
@@ -114,7 +116,7 @@ void deallocateCSR(int * &irp, int * &ja, double * &as, double * &x, double *&y)
 	cudaFree(y);
 }
 
-void deallocateEllpack(int * &ja, double * &as, double * &x, double * &y, int * &maxnz) {
+void deallocateEllpack(int ** &ja, double ** &as, double * &x, double * &y, int * &maxnz) {
 	cudaFree(ja);
 	cudaFree(as);
 	cudaFree(x);
@@ -127,58 +129,72 @@ void collectResults(CSR * &csr, Ellpack * &ellpack, double * &csr_y, double * &e
 	cudaMemcpy(ellpack->y, ellpack_y, sizeof(double) * n, cudaMemcpyDeviceToHost);
 }
 
+void getBlockNumbers(int m, int &warp_size) {
+	n_blocks_scalar = m / scalar_thr_block;
+	if (m % scalar_thr_block > 0.0) {
+		n_blocks_scalar++;
+	}
+	n_blocks_vm = (m * warp_size) / vm_thr_block;
+	if ((m * warp_size) % vm_thr_block > 0.0) {
+		n_blocks_vm++;
+	}
+	if (n_blocks_vm > MAX_N_BLOCKS) {
+		vm_thr_block *= 2;
+		n_blocks_vm = (m * warp_size) / vm_thr_block;
+		if ((m * warp_size) % vm_thr_block > 0.0) {
+			n_blocks_vm++;
+		}
+	}
+	if (n_blocks_vm > MAX_N_BLOCKS) {
+		warp_size /= 2;
+		n_blocks_vm = (m * warp_size) / vm_thr_block;
+		if ((m * warp_size) % vm_thr_block > 0.0) {
+			n_blocks_vm++;
+		}
+	}
+}
 
 void solveCuda(IOmanager * io, std::string path, CSR * &csr, Ellpack * &ellpack) {
 
 	int m = csr->getRows();
 	int n = csr->getCols();
-	int n_blocks_scalar = m / scalar_thr_block;
-	if (m % scalar_thr_block > 0.0) {
-		n_blocks_scalar++;
-	}
+	int warp_size = 32, *d_warp_size;
 
-	int n_blocks_vm = (m * 32) / vm_thr_block;
-	if ((m * 32) % vm_thr_block > 0.0) {
-		n_blocks_vm++;
-	}
-	if (n_blocks_vm > MAX_N_BLOCKS) {
-		vm_thr_block *= 2;
-		n_blocks_vm = (m * 32) / vm_thr_block;
-		if ((m * 32) % vm_thr_block > 0.0) {
-			n_blocks_vm++;
-		}
-	}
-
+	getBlockNumbers(m, warp_size);
 	const int shmem_size = vm_thr_block * sizeof(double);
 
-	int * csr_irp, * csr_ja, * ellpack_ja, * maxnz, * rows;
-	double * csr_as, * csr_x, * csr_y, * ellpack_as, * ellpack_x, * ellpack_y;
+	int * csr_irp, * csr_ja, ** ellpack_ja, * maxnz, * rows;
+	double * csr_as, * csr_x, * csr_y, ** ellpack_as, * ellpack_x, * ellpack_y;
 	
 	allocateCSR(csr, csr_irp, csr_ja, csr_as, csr_x, csr_y, m, n);
 	allocateEllpack(ellpack, ellpack_ja, ellpack_as, ellpack_x, ellpack_y, maxnz, m, n);
+	cudaCheckError(__LINE__);
 
 	cudaMalloc((void**)&rows, sizeof(int));
 	cudaMemcpy(rows, &m, sizeof(int), cudaMemcpyHostToDevice);
+	cudaMalloc((void**)&d_warp_size, sizeof(int));
+	cudaMemcpy(d_warp_size, &warp_size, sizeof(int), cudaMemcpyHostToDevice);
+	cudaCheckError(__LINE__);
 
-	
 	for (int k = 0; k < NR_RUNS + 1; ++k) {
 		if (k != 0) csr->trackCSRTime(SCALAR);
 		scalarCSR<<<n_blocks_scalar, scalar_thr_block>>>(rows, csr_irp, csr_ja, csr_as, csr_x, csr_y);
 		cudaDeviceSynchronize();
 		if (k != 0) csr->trackCSRTime(SCALAR);
-		cudaCheckError();
+		cudaMemset(csr_y, 0.0, sizeof(double) * m);
+		cudaCheckError(__LINE__);
 
 		if (k != 0) csr->trackCSRTime(VECTOR_MINING);
-		vectorMiningCSR<<<n_blocks_vm, vm_thr_block, shmem_size>>>(rows, csr_irp, csr_ja, csr_as, csr_x, csr_y);
+		vectorMiningCSR<<<n_blocks_vm, vm_thr_block, shmem_size>>>(rows, d_warp_size, csr_irp, csr_ja, csr_as, csr_x, csr_y);
 		cudaDeviceSynchronize();
 		if (k != 0) csr->trackCSRTime(VECTOR_MINING);
-		cudaCheckError();
+		cudaCheckError(__LINE__);
 		
 		if (k != 0) ellpack->trackTime();
 		scalarEllpack<<<n_blocks_scalar, scalar_thr_block>>>(rows, ellpack_ja, ellpack_as, ellpack_x, ellpack_y, maxnz);
 		cudaDeviceSynchronize();
 		if (k != 0) ellpack->trackTime();
-		cudaCheckError();
+		cudaCheckError(__LINE__);
 
 		if (k != NR_RUNS) {
 			cudaMemset(csr_y, 0.0, sizeof(double) * m);
@@ -187,11 +203,11 @@ void solveCuda(IOmanager * io, std::string path, CSR * &csr, Ellpack * &ellpack)
 	}
 
 	collectResults(csr, ellpack, csr_y, ellpack_y, n);
-	cudaCheckError();
+	cudaCheckError(__LINE__);
 
 	deallocateCSR(csr_irp, csr_ja, csr_as, csr_x, csr_y);
 	deallocateEllpack(ellpack_ja, ellpack_as, ellpack_x, ellpack_y, maxnz);
-	cudaCheckError();
+	cudaCheckError(__LINE__);
 	
 	io->exportResults(CUDA, path, csr, ellpack);
 }

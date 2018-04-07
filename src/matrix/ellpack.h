@@ -20,6 +20,7 @@ public:
 	double ** getas();
 	double * get1Das();
 	void print();
+	bool toLargeForCUDA();
 };
 
 #endif
