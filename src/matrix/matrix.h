@@ -7,6 +7,7 @@
 
 class Matrix {
 public:
+	bool fits_in_memory;
 	int cols, rows, nz;
 	long long mflops;
 	double start, done, mean, average_deviation;
@@ -25,6 +26,9 @@ public:
 	void printElapsedTime();
 	void trackTime();
 	void resetResults();
+	void initVectors();
+
+	bool fitsInMemory();
 };
 
 #endif

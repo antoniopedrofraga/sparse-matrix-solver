@@ -60,6 +60,13 @@
   keywordstyle=[2]{\color{purple}}
 }
 
+\lstdefinestyle{banner}{
+  xleftmargin=.2cm, xrightmargin=.2cm,
+  otherkeywords={1, 2, 3, 4, 5, 6, 7, 8, 9, 0},
+  morekeywords=[2]{1, 2, 3, 4, 5, 6, 7, 8, 9, 0},
+  keywordstyle=[2]{\color{dkgreen}}
+}
+
 \newcommand{\HRule}[1]{\rule{\linewidth}{#1}}
 \onehalfspacing
 \setcounter{tocdepth}{5}
@@ -310,21 +317,69 @@ $
 
 \par In order to calculate the resulting vector in the $A.x = b$ equation, one has to execute \textbf{two} floating point operations per \textit{non-zero} value. Thus, the \textbf{numerator} expression of the previous division is obtained. The \textbf{denominator} is defined by the time, in seconds, to solve the equation. 
 
-\subsection*{OpenMP vs CUDA}
-\addcontentsline{toc}{subsection}{OpenMP vs CUDA}
+\subsection*{CPU vs GPU}
+\addcontentsline{toc}{subsection}{CPU vs GPU}
 OpenMP, is a technology that makes use of threads running in \textbf{C}entral \textbf{P}rocessing \textbf{U}nits. These processors, are often few compared to the number of cores present in a \textbf{G}raphics \textbf{P}rocessing \textbf{U}nits device, and the level of parallelism found in these devices is comparatively low to the level of parallelism found on GPUs. One can expect to find hundreds of cores working in parallel in a GPU. 
 \par On other hand, the CUDA technology, developed by NVIDIA, offers a coding interface with a C-like syntax. Not only it allows a fast shared memory between cores within a block, but the possibility of gather data from different blocks as well. These systems allow developers to build applications capable of processing larger sets of data more quickly.\cite{cpu-gpu} 
 
 
 \section*{Procedures}
 \addcontentsline{toc}{section}{Procedures}
-\par A parsing mechanism was developed in order to convert information in the File System into the previously referred formats. The several files were in the Matrix Market format, which the basic information is the size of the matrix, \textbf{M} rows and \textbf{N} columns, and the number of \textit{non-zero} values. These files were followed by information about each one of these values, like row, column and value itself. 
-\par Both 
+\par A parsing mechanism was developed in order to convert information in the File System into the previously referred formats. The several files were in the Matrix Market format, which describes the size of the matrix, \textbf{M} rows and \textbf{N} columns, and the number of \textit{non-zero} values. 
+\par Three distinct methods were developed. The first one computed the results sequentially, the second one computed the results with OpenMP, and the third used CUDA. All the three methods were capable of computing matrices in the CSR and Ellpack formats. 
+\par The results were exported into \textbf{csv} files.
 
 \subsection*{Parsing}
 \addcontentsline{toc}{subsection}{Parsing}
 
+\par Parsing was done with by using one proper library to read sparse matrices in the \textbf{MatrixMarket} format. This format contains information about the type of matrix the program is about to read. These files begin with a banner, which describes the matrix author, date of creation, id and other fields.
 
+\begin{lstlisting}[style=banner]
+%%MatrixMarket matrix coordinate real general
+%-------------------------------------------------------------------------------
+% UF Sparse Matrix Collection, Tim Davis
+% http://www.cise.ufl.edu/research/sparse/matrices/vanHeukelum/cage4
+% name: vanHeukelum/cage4
+% [DNA electrophoresis, 4 monomers in polymer. A. van Heukelum, Utrecht U.]
+% id: 905
+% date: 2003
+% author: A. van Heukelum
+% ed: T. Davis
+% fields: title A name id date author ed kind
+% kind: directed weighted graph
+%-------------------------------------------------------------------------------
+\end{lstlisting}
+
+\par The first line of the banner describes the type of the matrix being read. The first line of the body contains information about the number of rows, columns and non-zero values. 
+\par Most of the matrices in the proposed set were of type \textbf{coordinate real general}. The values are identified by three elements, row, column and value,
+
+\begin{lstlisting}[style=banner]
+1 1 .75
+2 1 .075027667114587
+4 1 .0916389995520797
+5 1 .0375138335572935
+(...)
+\end{lstlisting}
+
+but the rows and columns are identified by using an \textbf{one-indexing} format. Therefore they had to be converted into the proper format in order to be used with C-like arrays. 
+\par Two matrices were of type \textbf{coordinate real symmetric}, which follow the format described above, but they only contained the upper or lower triangle of a given matrix. The matrix could trivially be represented in memory by adding one extra value with \textbf{row} and \textbf{col} swapped. Notice, that this process is not needed if a value is part of the main diagonal of a matrix, since the set contained square matrices only. The \textit{non-zero} values were incremented in these type of matrices.
+\par The last type of matrices is declared as \textbf{coordinate pattern general}. In this type of matrices the values were assumed to be \textbf{one}. Therefore the body contained information about the \textbf{row} and \textbf{column} of a given value only. These matrices are often used to represent graphs.
+
+\hfill
+
+\par The values in the MatrixMarket format were sorted by rows, followed by sorted columns. This detail creates some problems when inserting values in the \textbf{CSR} format, since it is required to represented them in order of columns as described previously. A special data structure was used to keep the values sorted by columns when representing them in memory, a \textbf{map}. This data structure is an implementation of a Red-Black tree, where is possible to know the correct order of an element in an \textbf{O(log n)} time. Notice that it is not important to keep values sorted by columns with these representations, therefore a vector of \textbf{pairs} was chosen to be the data structure in the map value. The first element of a given pair described a column, and the second element described a value. The values were then added to the correct representations.
+
+\subsection*{Average non-zero deviation}
+\addcontentsline{toc}{subsection}{Average non-zero deviation}
+
+
+
+\subsection*{OpenMP}
+\addcontentsline{toc}{subsection}{OpenMP}
+
+\par 
+
+ 
 \section*{Solution Design}
 \addcontentsline{toc}{section}{Solution Design}
 

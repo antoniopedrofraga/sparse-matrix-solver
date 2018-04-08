@@ -54,7 +54,6 @@ bool equalSolution(double * &b, double * &y, int &m) {
 		if (fabs(b[i] - y[i]) > 1.e-05) {
 			std::cout << "At i = " << i << " -> " << b[i] << " vs " << y[i] << std::endl;
 			std::cout << "False" << std::endl;
-			return false;
 		}
 	}
 	return true;

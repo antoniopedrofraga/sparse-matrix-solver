@@ -11,7 +11,7 @@ const std::string CUDA = OUTPUTS + "cuda.csv";
 const std::string PATTERN = "matrix coordinate pattern.*";
 const std::string ARRAY = "matrix coordinate pattern.*";
 
-const int NR_RUNS = 10;
+const int NR_RUNS = 20;
 
 const int MIN_THREADS = 2;
 const int MAX_THREADS = 16;
@@ -21,10 +21,5 @@ const int SCALAR = 0;
 const int VECTOR_MINING = 1;
 
 const int MAX_N_BLOCKS = 65535;
-
-
-int ** alloc2d(int n, int m);
-double ** alloc2dDouble(int n, int m);
-
 
 #endif

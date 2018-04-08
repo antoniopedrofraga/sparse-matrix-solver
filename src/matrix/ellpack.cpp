@@ -4,27 +4,43 @@
 
 Ellpack::Ellpack(int cols, int rows, int maxnz, int nz) : Matrix(cols, rows, nz) {
 	this->maxnz = maxnz;
-	this->ja = alloc2d(rows, maxnz);
-	this->pointer = new int[rows];
-	this->as = alloc2dDouble(rows, maxnz);
-	/*
-	for (int i = 0; i < rows; ++i) {
-		this->ja[i] = new int[maxnz];
-		this->as[i] = new double[maxnz];
-	}*/
-	
-	std::fill(&this->pointer[0], &this->pointer[rows], 0);
-	
-	for (int i = 0; i < rows; ++i) {
-		std::fill(&this->ja[i][0], &this->ja[i][maxnz], 0);
-		std::fill(&this->as[i][0], &this->as[i][maxnz], 0.0);
+	try {
+		this->ja = new int * [rows];
+		this->pointer = new int[rows];
+		this->as = new double * [rows];
+
+		for (int i = 0; i < rows; ++i) {
+			this->ja[i] = new int[maxnz];
+			this->as[i] = new double[maxnz];
+		}
+	} catch (std::bad_alloc& ba) {
+		this->rows = 0;
+		this->cols = 0;
+		this->maxnz = 0;
+		this->fits_in_memory = false;
 	}
+	
+	if (this->fits_in_memory) {
+		std::fill(&this->pointer[0], &this->pointer[rows], 0);
+	
+		for (int i = 0; i < rows; ++i) {
+			std::fill(&this->ja[i][0], &this->ja[i][maxnz], 0);
+			std::fill(&this->as[i][0], &this->as[i][maxnz], 0.0);
+		}
+
+		this->initVectors();
+	}
+
 };
 
 Ellpack::~Ellpack() {
 	delete [] this->x;
 	delete [] this->y;
 	delete [] this->pointer;
+	for (int i = 0; i < rows; ++i) {
+		delete [] this->ja[i];
+		delete [] this->as[i];
+	}
 	delete [] this->ja;
 	delete [] this->as;
 	delete [] this->onedas;
@@ -47,11 +63,11 @@ int ** Ellpack::getja() {
 }
 
 int * Ellpack::get1Dja() {
-	int m = getRows();
-	int mnz = getmaxnz();
+	long long int m = getRows();
+	long long int mnz = getmaxnz();
 	onedja = new int[m * mnz];
-	for (int i = 0; i < m; ++i) {
-		for (int j = 0; j < mnz; ++j) {
+	for (long long int i = 0; i < m; ++i) {
+		for (long long int j = 0; j < mnz; ++j) {
 			onedja[i * mnz + j] = ja[i][j];
 		}
 	}
@@ -73,11 +89,11 @@ double ** Ellpack::getas() {
 }
 
 double * Ellpack::get1Das() {
-	int m = getRows();
-	int mnz = getmaxnz();
+	long long int m = getRows();
+	long long int mnz = getmaxnz();
 	onedas = new double[m * mnz];
-	for (int i = 0; i < m; ++i) {
-		for (int j = 0; j < mnz; ++j) {
+	for (long long int i = 0; i < m; ++i) {
+		for (long long int j = 0; j < mnz; ++j) {
 			onedas[i * mnz + j] = as[i][j];
 		}
 	}

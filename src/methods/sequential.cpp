@@ -7,20 +7,17 @@
 #include "../io/iomanager.h"
 #include "../matrix/matrix.h"
 
-void pause() {
-    std::cin.clear();
-    std::cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    std::string dummy;
-    std::cout << "Press any key to continue . . .";
-    std::getline(std::cin, dummy);
-}
-
 void sequentialCSR(CSR * &csr) {
+	if (!csr->fitsInMemory()) {
+		return;
+	}
+
 	int m = csr->getRows();
 	int * irp = csr->getirp();
 	int * ja = csr->getja();
 	double * as = csr->getas();
 	double * x = csr->getX();
+
 	double temp = 0.0;
 	for (int k = 0; k < NR_RUNS; ++k) {
 		csr->trackTime();
@@ -36,6 +33,10 @@ void sequentialCSR(CSR * &csr) {
 }
 
 void sequentialEllpack(Ellpack * &ellpack) {
+	if (!ellpack->fitsInMemory()) {
+		return;
+	}
+
 	int m = ellpack->getRows();
 	int maxnz = ellpack->getmaxnz();
 	int ** ja = ellpack->getja();

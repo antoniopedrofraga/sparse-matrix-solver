@@ -2,18 +2,28 @@
 #include <iostream>
 
 CSR::CSR(int cols, int rows, int nz) : Matrix(cols, rows, nz) {
-	this->ja = new int[nz];
-	this->as = new double[nz];
-	this->irp = new int[cols + 1];
+	try {
+		this->ja = new (std::nothrow) int[nz];
+		this->as = new (std::nothrow)double[nz];
+		this->irp = new (std::nothrow) int[cols + 1];
+	} catch (std::bad_alloc& ba) {
+		this->rows = 0;
+		this->cols = 0;
+		this->fits_in_memory = false;
+	}
+
 	this->element_index = 0;
 
 	this->cuda_times_csr = std::make_pair(0.0, 0.0);
 	
 	this->irp_size = 0;
 
-	std::fill(&this->irp[0], &this->irp[cols + 1], -1);
-	std::fill(&this->ja[0], &this->ja[nz], -1);
-	std::fill(&this->as[0], &this->as[nz], 0.0);
+	if (this->fits_in_memory) {
+		std::fill(&this->irp[0], &this->irp[cols + 1], -1);
+		std::fill(&this->ja[0], &this->ja[nz], -1);
+		std::fill(&this->as[0], &this->as[nz], 0.0);
+		this->initVectors();
+	}
 };
 
 CSR::~CSR() {
@@ -68,11 +78,11 @@ void CSR::print() {
 }
 
 unsigned long long CSR::getScalarMegaFlops() {
-	return 2.0 * (unsigned long long)this->nz / ((double)this->cuda_times_csr.first / (unsigned long long)this->measures) / 1000.0;
+	return 2.0 * (unsigned long long)getnz() / ((double)this->cuda_times_csr.first / (double)this->measures) / 1000.0;
 }
 
 unsigned long long CSR::getVecMinMegaFlops() {
-	return 2.0 * (unsigned long long)this->nz / ((double)this->cuda_times_csr.second / (unsigned long long)this->measures) / 1000.0;
+	return 2.0 * (unsigned long long)getnz() / ((double)this->cuda_times_csr.second / (unsigned long long)this->measures) / 1000.0;
 }
 
 void CSR::trackCSRTime(int method) {

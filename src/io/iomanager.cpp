@@ -1,6 +1,5 @@
 #include "iomanager.h"
 #include "mmio.h"
-#include "element.h"
 #include "../matrix/csr.h"
 #include "../matrix/ellpack.h"
 #include "iomanager.h"
@@ -24,7 +23,7 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 	Ellpack * ellpack;
 	
 	int M, N, num_values, nz; 
-	map<int, std::vector<Element*>> occurences;
+	map<int, std::vector<std::pair<int, double>>> occurences;
 	size_t max_nz = 1;
 	size_t pointer = 0;
 	std::string type;
@@ -75,12 +74,12 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 
 		auto it = occurences.find(m);
 		if (it != occurences.end()) {
-			it->second.push_back(new Element(n, value));
+			it->second.push_back({n, value});
 			if (max_nz < it->second.size()) {
 				max_nz = it->second.size();
 			}
 		} else {
-			occurences.insert({m, { new Element(n, value) }});
+			occurences.insert({m, { {n, value} }});
 		}
 
 		/*
@@ -90,51 +89,59 @@ std::pair<CSR*, Ellpack*> IOmanager::readFile(string filename) {
 			++nz;
 			auto it_b = occurences.find(n);
 			if (it_b != occurences.end()) {
-				it_b->second.push_back(new Element(m, value));
+				it_b->second.push_back({m, value});
 				if (max_nz < it_b->second.size()) {
 					max_nz = it_b->second.size();
 				}
 			} else {
-				occurences.insert({n, { new Element(m, value) }});
+				occurences.insert({n, { {m, value} }});
 			}
 		}
 	}
+
+	std::cout << "(M = " << M << ", N = " << N << ", MAXNZ = " << max_nz << ", NZ = " << nz << ") " << std::endl;
 
 	csr = new CSR(N, M, nz);
 	ellpack = new Ellpack(N, M, max_nz, nz);
 
 	for (auto map_it = occurences.begin(); map_it != occurences.end(); map_it++) {
 		int row_index = map_it->first;
-		std::vector<Element*> elements = map_it->second;
+		std::vector<std::pair<int, double>> elements = map_it->second;
 		csr->mean += elements.size();
 		ellpack->mean += elements.size();
 	}
+
 	csr->mean /= occurences.size();
 	ellpack->mean /= occurences.size();
 
 	for (auto map_it = occurences.begin(); map_it != occurences.end(); map_it++) {
 		int row_index = map_it->first;
-		std::vector<Element*> elements = map_it->second;
-		csr->addPointer(pointer);
+		std::vector<std::pair<int, double>> elements = map_it->second;
+		if (csr->fitsInMemory()) csr->addPointer(pointer);
 
 		csr->average_deviation += fabs(csr->mean - elements.size());
 		ellpack->average_deviation += fabs(ellpack->mean - elements.size());
 		for (size_t i = 0; i < elements.size(); ++i) {
-			double value = elements[i]->getValue();
-			int col_index = elements[i]->getRow();
-			csr->addElement(col_index, value);
-			ellpack->addElement(row_index, col_index, value);
+			double value = elements[i].second;
+			int col_index = elements[i].first;
+			if (csr->fitsInMemory()) csr->addElement(col_index, value);
+
+			if (ellpack->fitsInMemory()) {
+				ellpack->addElement(row_index, col_index, value);
+			}
+
 			pointer++;
 		}
 	}
-	csr->addPointer(pointer);
+	if (csr->fitsInMemory()) csr->addPointer(pointer);
 	csr->average_deviation /= occurences.size();
 	csr->average_deviation = csr->average_deviation / csr->mean * 100;
 	ellpack->average_deviation /= occurences.size();
 	ellpack->average_deviation = ellpack->average_deviation / ellpack->mean * 100;
 
 	std::cout << "(Average nz deviation: " << csr->average_deviation << "%) ";
-	std::cout << (ellpack->toLargeForCUDA() ? "(too large for CUDA)" : "");
+	std::cout << (!csr->fitsInMemory() ? "(CSR doesn't fit in mem)" : "");
+	std::cout << (!ellpack->fitsInMemory() ? "(Ellpack doesn't fit in mem)" : "");
 
 	return make_pair(csr, ellpack);
 }

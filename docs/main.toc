@@ -3,12 +3,14 @@
 \contentsline {subsection}{Sparse Matrices Formats}{4}
 \contentsline {subsection}{Problem definition}{6}
 \contentsline {subsection}{Performance analysis}{7}
-\contentsline {subsection}{OpenMP vs CUDA}{7}
+\contentsline {subsection}{CPU vs GPU}{7}
 \contentsline {section}{Procedures}{7}
 \contentsline {subsection}{Parsing}{8}
-\contentsline {section}{Solution Design}{8}
-\contentsline {section}{Results \& Discussion}{8}
-\contentsline {section}{Conclusions}{9}
-\contentsline {section}{Appendices}{11}
-\contentsline {subsection}{Source Code}{12}
-\contentsline {subsection}{Doxygen Documentation}{12}
+\contentsline {subsection}{Average non-zero deviation}{9}
+\contentsline {subsection}{OpenMP}{9}
+\contentsline {section}{Solution Design}{9}
+\contentsline {section}{Results \& Discussion}{9}
+\contentsline {section}{Conclusions}{10}
+\contentsline {section}{Appendices}{12}
+\contentsline {subsection}{Source Code}{13}
+\contentsline {subsection}{Doxygen Documentation}{13}

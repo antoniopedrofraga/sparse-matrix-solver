@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.11.3)  29 MAR 2018 01:50
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.11.3)  8 APR 2018 01:30
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1429,50 +1429,50 @@ File: ts1enc.dfu 2015/12/03 v1.1r UTF-8 support for inputenc
 ) (./main.aux)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 88.
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 88.
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 88.
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 88.
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 88.
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 88.
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Font Info:    Checking defaults for FML/futm/m/it on input line 88.
-LaTeX Font Info:    Try loading font information for FML+futm on input line 88.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 95.
+LaTeX Font Info:    ... okay on input line 95.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 95.
+LaTeX Font Info:    ... okay on input line 95.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 95.
+LaTeX Font Info:    ... okay on input line 95.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 95.
+LaTeX Font Info:    ... okay on input line 95.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 95.
+LaTeX Font Info:    ... okay on input line 95.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 95.
+LaTeX Font Info:    ... okay on input line 95.
+LaTeX Font Info:    Checking defaults for FML/futm/m/it on input line 95.
+LaTeX Font Info:    Try loading font information for FML+futm on input line 95.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/fourier/fmlfutm.fd
 File: fmlfutm.fd 2004/10/30 Fontinst v1.926 font definitions for FML/futm.
 )
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Font Info:    Checking defaults for FMS/futm/m/n on input line 88.
-LaTeX Font Info:    Try loading font information for FMS+futm on input line 88.
+LaTeX Font Info:    ... okay on input line 95.
+LaTeX Font Info:    Checking defaults for FMS/futm/m/n on input line 95.
+LaTeX Font Info:    Try loading font information for FMS+futm on input line 95.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/fourier/fmsfutm.fd
 File: fmsfutm.fd 2004/10/30 Fontinst v1.926 font definitions for FMS/futm.
 )
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Font Info:    Checking defaults for FMX/futm/m/n on input line 88.
-LaTeX Font Info:    Try loading font information for FMX+futm on input line 88.
+LaTeX Font Info:    ... okay on input line 95.
+LaTeX Font Info:    Checking defaults for FMX/futm/m/n on input line 95.
+LaTeX Font Info:    Try loading font information for FMX+futm on input line 95.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/fourier/fmxfutm.fd
 File: fmxfutm.fd futm-extension
 )
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 88.
-LaTeX Font Info:    Try loading font information for TS1+cmr on input line 88.
+LaTeX Font Info:    ... okay on input line 95.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 95.
+LaTeX Font Info:    Try loading font information for TS1+cmr on input line 95.
 
 (/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Font Info:    Try loading font information for T1+futs on input line 88.
+LaTeX Font Info:    ... okay on input line 95.
+LaTeX Font Info:    Try loading font information for T1+futs on input line 95.
 
 (/usr/share/texlive/texmf-dist/tex/latex/fourier/t1futs.fd
 File: t1futs.fd 2004/03/02 Fontinst v1.926 font definitions for T1/futs.
@@ -1513,7 +1513,7 @@ File: t1futs.fd 2004/03/02 Fontinst v1.926 font definitions for T1/futs.
 
 Package lastpage Info: Please have a look at the pageslts package at
 (lastpage)             https://www.ctan.org/pkg/pageslts
-(lastpage)             ! on input line 88.
+(lastpage)             ! on input line 95.
 (/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count139
@@ -1574,7 +1574,7 @@ e
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: listings package is loaded.
 Package caption Info: End \AtBeginDocument code.
-LaTeX Info: Redefining \microtypecontext on input line 88.
+LaTeX Info: Redefining \microtypecontext on input line 95.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using default protrusion set `alltext'.
@@ -1600,32 +1600,32 @@ Package pdflscape Info: Auto-detected driver: pdftex on input line 80.
 )
 \c@lstlisting=\count145
 LaTeX Font Info:    Font shape `T1/futs/bx/n' in size <20.74> not available
-(Font)              Font shape `T1/futs/b/n' tried instead on input line 106.
-LaTeX Font Info:    Try loading font information for FML+futmi on input line 10
-6.
+(Font)              Font shape `T1/futs/b/n' tried instead on input line 113.
+LaTeX Font Info:    Try loading font information for FML+futmi on input line 11
+3.
 
 (/usr/share/texlive/texmf-dist/tex/latex/fourier/fmlfutmi.fd
 File: fmlfutmi.fd 2004/10/30 Fontinst v1.926 font definitions for FML/futmi.
 )
 LaTeX Font Info:    Font shape `FMX/futm/m/n' will be
-(Font)              scaled to size 13.24796pt on input line 106.
+(Font)              scaled to size 13.24796pt on input line 113.
 LaTeX Font Info:    Font shape `FMX/futm/m/n' will be
-(Font)              scaled to size 9.19998pt on input line 106.
+(Font)              scaled to size 9.19998pt on input line 113.
 LaTeX Font Info:    Font shape `FMX/futm/m/n' will be
-(Font)              scaled to size 7.35999pt on input line 106.
+(Font)              scaled to size 7.35999pt on input line 113.
 LaTeX Font Info:    Font shape `U/futm/m/n' will be
-(Font)              scaled to size 13.24796pt on input line 106.
+(Font)              scaled to size 13.24796pt on input line 113.
 LaTeX Font Info:    Font shape `U/futm/m/n' will be
-(Font)              scaled to size 9.19998pt on input line 106.
+(Font)              scaled to size 9.19998pt on input line 113.
 LaTeX Font Info:    Font shape `U/futm/m/n' will be
-(Font)              scaled to size 7.35999pt on input line 106.
+(Font)              scaled to size 7.35999pt on input line 113.
 LaTeX Font Info:    Font shape `T1/futs/bx/n' in size <14.4> not available
-(Font)              Font shape `T1/futs/b/n' tried instead on input line 106.
+(Font)              Font shape `T1/futs/b/n' tried instead on input line 113.
  [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
 LaTeX Font Info:    Font shape `T1/futs/bx/n' in size <17.28> not available
-(Font)              Font shape `T1/futs/b/n' tried instead on input line 109.
+(Font)              Font shape `T1/futs/b/n' tried instead on input line 116.
  (./main.toc
 LaTeX Font Info:    Font shape `T1/futs/bx/n' in size <12> not available
 (Font)              Font shape `T1/futs/b/n' tried instead on input line 2.
@@ -1647,14 +1647,14 @@ LaTeX Font Info:    Font shape `U/futm/m/n' will be
 
  [2]
 LaTeX Font Info:    Font shape `T1/futs/bx/n' in size <10.95> not available
-(Font)              Font shape `T1/futs/b/n' tried instead on input line 113.
+(Font)              Font shape `T1/futs/b/n' tried instead on input line 120.
  [3]
 LaTeX Font Info:    Font shape `T1/futs/bx/n' in size <24.88> not available
-(Font)              Font shape `T1/futs/b/n' tried instead on input line 163.
+(Font)              Font shape `T1/futs/b/n' tried instead on input line 170.
  [4]
 LaTeX Font Info:    Font shape `T1/futs/bx/it' in size <12> not available
-(Font)              Font shape `T1/futs/b/it' tried instead on input line 198.
-LaTeX Font Info:    Try loading font information for T1+cmtt on input line 231.
+(Font)              Font shape `T1/futs/b/it' tried instead on input line 205.
+LaTeX Font Info:    Try loading font information for T1+cmtt on input line 238.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd
@@ -1666,25 +1666,34 @@ Package microtype Info: Loading generic settings for font family
 (microtype)             See the microtype manual for details.
  [5] [6]
 LaTeX Font Info:    Font shape `FMX/futm/m/n' will be
-(Font)              scaled to size 22.88956pt on input line 306.
+(Font)              scaled to size 22.88956pt on input line 313.
 LaTeX Font Info:    Font shape `FMX/futm/m/n' will be
-(Font)              scaled to size 15.89755pt on input line 306.
+(Font)              scaled to size 15.89755pt on input line 313.
 LaTeX Font Info:    Font shape `U/futm/m/n' will be
-(Font)              scaled to size 22.88956pt on input line 306.
+(Font)              scaled to size 22.88956pt on input line 313.
 LaTeX Font Info:    Font shape `U/futm/m/n' will be
-(Font)              scaled to size 15.89755pt on input line 306.
- [7] [8]
-[9] [10] [11] 
+(Font)              scaled to size 15.89755pt on input line 313.
+ [7]
+Overfull \hbox (8.25351pt too wide) in paragraph at lines 339--340
+[][][]  
+ []
+
+
+Overfull \hbox (8.25351pt too wide) in paragraph at lines 350--351
+[][][]  
+ []
+
+[8] [9] [10] [11] [12] 
 AED: lastpage setting LastPage
-[12] (./main.aux) ) 
+[13] (./main.aux) ) 
 Here is how much of TeX's memory you used:
- 12247 strings out of 494910
- 174511 string characters out of 6179836
- 425119 words of memory out of 5000000
- 15066 multiletter control sequences out of 15000+600000
- 142070 words of font info for 222 fonts, out of 8000000 for 9000
+ 12344 strings out of 494910
+ 175488 string characters out of 6179836
+ 432119 words of memory out of 5000000
+ 15147 multiletter control sequences out of 15000+600000
+ 143276 words of font info for 234 fonts, out of 8000000 for 9000
  36 hyphenation exceptions out of 8191
- 42i,12n,58p,532b,1196s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 42i,12n,58p,907b,1196s stack positions out of 5000i,500n,10000p,200000b,80000s
  </home/antonio/.texmf-var/fonts/pk/ljfour/jknappen/ec/ectt1
 200.600pk> </home/antonio/.texmf-var/fonts/pk/ljfour/jknappen/ec/ectt1095.600pk
 >{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texlive
@@ -1694,10 +1703,10 @@ f-dist/fonts/type1/public/fourier/fourier-ms.pfb></usr/share/texlive/texmf-dist
 /adobe/utopia/putbi8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/adobe/utop
 ia/putr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/adobe/utopia/putri8a.p
 fb>
-Output written on main.pdf (12 pages, 106590 bytes).
+Output written on main.pdf (13 pages, 118930 bytes).
 PDF statistics:
- 152 PDF objects out of 1000 (max. 8388607)
- 55 compressed objects within 1 object stream
+ 185 PDF objects out of 1000 (max. 8388607)
+ 58 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  41985 words of extra memory for PDF output out of 42996 (max. 10000000)
 

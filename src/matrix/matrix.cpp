@@ -10,9 +10,7 @@ Matrix::Matrix(int cols, int rows, int nz) {
 	this->cols = cols;
 	this->mean = 0.0;
 	this->average_deviation = 0.0;
-
-	this->x = new double[rows];
-	this->y = new double[rows];
+	this->fits_in_memory = true;
 	
 	this->measures = 0;
 	this->measuring = false;
@@ -20,12 +18,17 @@ Matrix::Matrix(int cols, int rows, int nz) {
 	this->elapsed_time = 0.0;
 	this->omp_times_threads = new std::pair<int, double>[NUM_THREADS];
 
-	std::fill(&this->y[0], &this->y[0], 0.0);
 	srand(time(NULL));
 
 	for (int i = 0; i < NUM_THREADS; ++i) {
 		omp_times_threads[i] = std::make_pair(0, 0.0);
 	}
+}
+
+void Matrix::initVectors() {
+	this->x = new double[rows];
+	this->y = new double[rows];
+	std::fill(&this->y[0], &this->y[0], 0.0);
 	for (int i = 0; i < cols; i++) {
 		double integer_part = rand();
 		double decimal_part = rand() / RAND_MAX;
@@ -50,6 +53,9 @@ int Matrix::getRows() {
 }
 
 unsigned long long Matrix::getMegaFlops() {
+	if (!fits_in_memory) {
+		return 0.0;
+	}
 	return 2.0 * (unsigned long long)this->nz / ((double)this->elapsed_time / (unsigned long long)this->measures) / 1000.0;
 }
 
@@ -58,8 +64,8 @@ unsigned long long Matrix::getMegaFlops(int i) {
 }
 
 void Matrix::printElapsedTime() {
-	if (elapsed_time == 0.0) {
-		std::cout << " (NO RUN) ";
+	if (!fits_in_memory) {
+		std::cout << " (NOT ENOUGH MEM) ";
 	} else {
 		std::cout << " (" << ((double)this->elapsed_time / (double)this->measures) << " ms " << this->measures << " measures) ";
 	}
@@ -70,8 +76,11 @@ void Matrix::resetResults() {
 	delete [] this->omp_times_threads;
 
 	this->omp_times_threads = new std::pair<int, double>[NUM_THREADS];
-	this->y = new double[cols];
-	std::fill(&this->y[0], &this->y[0], 0.0);
+
+	if (this->fits_in_memory) {
+		this->y = new double[cols];
+		std::fill(&this->y[0], &this->y[0], 0.0);
+	}
 
 	for (int i = 0; i < NUM_THREADS; ++i) {
 		omp_times_threads[i] = std::make_pair(0, 0.0);
@@ -92,6 +101,10 @@ void Matrix::trackTime() {
 		this->measures++;
 		this->measuring = false;
 	}
+}
+
+bool Matrix::fitsInMemory() {
+	return this->fits_in_memory;
 }
 
 void Matrix::trackTimeOMP(int num_threads) {
