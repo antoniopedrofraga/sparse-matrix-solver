@@ -1,0 +1,330 @@
+Determining if the pthread_create exist failed with the following output:
+Change Dir: /mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_a11fb/fast"
+/usr/bin/make -f CMakeFiles/cmTC_a11fb.dir/build.make CMakeFiles/cmTC_a11fb.dir/build
+make[1]: Entering directory '/mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_a11fb.dir/CheckSymbolExists.c.o
+/usr/bin/cc    -fPIC    -o CMakeFiles/cmTC_a11fb.dir/CheckSymbolExists.c.o   -c /mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTC_a11fb
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a11fb.dir/link.txt --verbose=1
+/usr/bin/cc  -fPIC     CMakeFiles/cmTC_a11fb.dir/CheckSymbolExists.c.o  -o cmTC_a11fb -rdynamic 
+CMakeFiles/cmTC_a11fb.dir/CheckSymbolExists.c.o: In function `main':
+CheckSymbolExists.c:(.text+0x1b): undefined reference to `pthread_create'
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_a11fb.dir/build.make:97: recipe for target 'cmTC_a11fb' failed
+make[1]: *** [cmTC_a11fb] Error 1
+make[1]: Leaving directory '/mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_a11fb/fast' failed
+make: *** [cmTC_a11fb/fast] Error 2
+
+File /mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_1333b/fast"
+/usr/bin/make -f CMakeFiles/cmTC_1333b.dir/build.make CMakeFiles/cmTC_1333b.dir/build
+make[1]: Entering directory '/mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_1333b.dir/CheckFunctionExists.c.o
+/usr/bin/cc    -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_1333b.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.5/Modules/CheckFunctionExists.c
+Linking C executable cmTC_1333b
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_1333b.dir/link.txt --verbose=1
+/usr/bin/cc  -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_1333b.dir/CheckFunctionExists.c.o  -o cmTC_1333b -rdynamic -lpthreads 
+/usr/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_1333b.dir/build.make:97: recipe for target 'cmTC_1333b' failed
+make[1]: *** [cmTC_1333b] Error 1
+make[1]: Leaving directory '/mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_1333b/fast' failed
+make: *** [cmTC_1333b/fast] Error 2
+
+
+Determining if the pthread_create exist failed with the following output:
+Change Dir: /mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_4765e/fast"
+/usr/bin/make -f CMakeFiles/cmTC_4765e.dir/build.make CMakeFiles/cmTC_4765e.dir/build
+make[1]: Entering directory '/mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_4765e.dir/CheckSymbolExists.c.o
+/usr/bin/cc    -fPIC    -o CMakeFiles/cmTC_4765e.dir/CheckSymbolExists.c.o   -c /mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTC_4765e
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_4765e.dir/link.txt --verbose=1
+/usr/bin/cc  -fPIC     CMakeFiles/cmTC_4765e.dir/CheckSymbolExists.c.o  -o cmTC_4765e -rdynamic 
+CMakeFiles/cmTC_4765e.dir/CheckSymbolExists.c.o: In function `main':
+CheckSymbolExists.c:(.text+0x1b): undefined reference to `pthread_create'
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_4765e.dir/build.make:97: recipe for target 'cmTC_4765e' failed
+make[1]: *** [cmTC_4765e] Error 1
+make[1]: Leaving directory '/mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_4765e/fast' failed
+make: *** [cmTC_4765e/fast] Error 2
+
+File /mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_40ff5/fast"
+/usr/bin/make -f CMakeFiles/cmTC_40ff5.dir/build.make CMakeFiles/cmTC_40ff5.dir/build
+make[1]: Entering directory '/mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_40ff5.dir/CheckFunctionExists.c.o
+/usr/bin/cc    -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_40ff5.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.5/Modules/CheckFunctionExists.c
+Linking C executable cmTC_40ff5
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_40ff5.dir/link.txt --verbose=1
+/usr/bin/cc  -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_40ff5.dir/CheckFunctionExists.c.o  -o cmTC_40ff5 -rdynamic -lpthreads 
+/usr/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_40ff5.dir/build.make:97: recipe for target 'cmTC_40ff5' failed
+make[1]: *** [cmTC_40ff5] Error 1
+make[1]: Leaving directory '/mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_40ff5/fast' failed
+make: *** [cmTC_40ff5/fast] Error 2
+
+
+Determining if the pthread_create exist failed with the following output:
+Change Dir: /mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_ffd76/fast"
+/usr/bin/make -f CMakeFiles/cmTC_ffd76.dir/build.make CMakeFiles/cmTC_ffd76.dir/build
+make[1]: Entering directory '/mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_ffd76.dir/CheckSymbolExists.c.o
+/usr/bin/cc    -fPIC    -o CMakeFiles/cmTC_ffd76.dir/CheckSymbolExists.c.o   -c /mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTC_ffd76
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ffd76.dir/link.txt --verbose=1
+/usr/bin/cc  -fPIC     CMakeFiles/cmTC_ffd76.dir/CheckSymbolExists.c.o  -o cmTC_ffd76 -rdynamic 
+CMakeFiles/cmTC_ffd76.dir/CheckSymbolExists.c.o: In function `main':
+CheckSymbolExists.c:(.text+0x1b): undefined reference to `pthread_create'
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_ffd76.dir/build.make:97: recipe for target 'cmTC_ffd76' failed
+make[1]: *** [cmTC_ffd76] Error 1
+make[1]: Leaving directory '/mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_ffd76/fast' failed
+make: *** [cmTC_ffd76/fast] Error 2
+
+File /mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_e4726/fast"
+/usr/bin/make -f CMakeFiles/cmTC_e4726.dir/build.make CMakeFiles/cmTC_e4726.dir/build
+make[1]: Entering directory '/mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_e4726.dir/CheckFunctionExists.c.o
+/usr/bin/cc    -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_e4726.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.5/Modules/CheckFunctionExists.c
+Linking C executable cmTC_e4726
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_e4726.dir/link.txt --verbose=1
+/usr/bin/cc  -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_e4726.dir/CheckFunctionExists.c.o  -o cmTC_e4726 -rdynamic -lpthreads 
+/usr/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_e4726.dir/build.make:97: recipe for target 'cmTC_e4726' failed
+make[1]: *** [cmTC_e4726] Error 1
+make[1]: Leaving directory '/mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_e4726/fast' failed
+make: *** [cmTC_e4726/fast] Error 2
+
+
+Determining if the pthread_create exist failed with the following output:
+Change Dir: /mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_4a0a8/fast"
+/usr/bin/make -f CMakeFiles/cmTC_4a0a8.dir/build.make CMakeFiles/cmTC_4a0a8.dir/build
+make[1]: Entering directory '/mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_4a0a8.dir/CheckSymbolExists.c.o
+/usr/bin/cc    -fPIC    -o CMakeFiles/cmTC_4a0a8.dir/CheckSymbolExists.c.o   -c /mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTC_4a0a8
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_4a0a8.dir/link.txt --verbose=1
+/usr/bin/cc  -fPIC     CMakeFiles/cmTC_4a0a8.dir/CheckSymbolExists.c.o  -o cmTC_4a0a8 -rdynamic 
+CMakeFiles/cmTC_4a0a8.dir/CheckSymbolExists.c.o: In function `main':
+CheckSymbolExists.c:(.text+0x1b): undefined reference to `pthread_create'
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_4a0a8.dir/build.make:97: recipe for target 'cmTC_4a0a8' failed
+make[1]: *** [cmTC_4a0a8] Error 1
+make[1]: Leaving directory '/mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_4a0a8/fast' failed
+make: *** [cmTC_4a0a8/fast] Error 2
+
+File /mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_a18b6/fast"
+/usr/bin/make -f CMakeFiles/cmTC_a18b6.dir/build.make CMakeFiles/cmTC_a18b6.dir/build
+make[1]: Entering directory '/mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_a18b6.dir/CheckFunctionExists.c.o
+/usr/bin/cc    -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_a18b6.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.5/Modules/CheckFunctionExists.c
+Linking C executable cmTC_a18b6
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a18b6.dir/link.txt --verbose=1
+/usr/bin/cc  -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_a18b6.dir/CheckFunctionExists.c.o  -o cmTC_a18b6 -rdynamic -lpthreads 
+/usr/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_a18b6.dir/build.make:97: recipe for target 'cmTC_a18b6' failed
+make[1]: *** [cmTC_a18b6] Error 1
+make[1]: Leaving directory '/mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_a18b6/fast' failed
+make: *** [cmTC_a18b6/fast] Error 2
+
+
+Determining if the pthread_create exist failed with the following output:
+Change Dir: /mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_27909/fast"
+/usr/bin/make -f CMakeFiles/cmTC_27909.dir/build.make CMakeFiles/cmTC_27909.dir/build
+make[1]: Entering directory '/mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_27909.dir/CheckSymbolExists.c.o
+/usr/bin/cc    -fPIC    -o CMakeFiles/cmTC_27909.dir/CheckSymbolExists.c.o   -c /mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTC_27909
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_27909.dir/link.txt --verbose=1
+/usr/bin/cc  -fPIC     CMakeFiles/cmTC_27909.dir/CheckSymbolExists.c.o  -o cmTC_27909 -rdynamic 
+CMakeFiles/cmTC_27909.dir/CheckSymbolExists.c.o: In function `main':
+CheckSymbolExists.c:(.text+0x1b): undefined reference to `pthread_create'
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_27909.dir/build.make:97: recipe for target 'cmTC_27909' failed
+make[1]: *** [cmTC_27909] Error 1
+make[1]: Leaving directory '/mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_27909/fast' failed
+make: *** [cmTC_27909/fast] Error 2
+
+File /mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_912ca/fast"
+/usr/bin/make -f CMakeFiles/cmTC_912ca.dir/build.make CMakeFiles/cmTC_912ca.dir/build
+make[1]: Entering directory '/mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_912ca.dir/CheckFunctionExists.c.o
+/usr/bin/cc    -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_912ca.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.5/Modules/CheckFunctionExists.c
+Linking C executable cmTC_912ca
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_912ca.dir/link.txt --verbose=1
+/usr/bin/cc  -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_912ca.dir/CheckFunctionExists.c.o  -o cmTC_912ca -rdynamic -lpthreads 
+/usr/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_912ca.dir/build.make:97: recipe for target 'cmTC_912ca' failed
+make[1]: *** [cmTC_912ca] Error 1
+make[1]: Leaving directory '/mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_912ca/fast' failed
+make: *** [cmTC_912ca/fast] Error 2
+
+
+Determining if the pthread_create exist failed with the following output:
+Change Dir: /mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_8a96f/fast"
+/usr/bin/make -f CMakeFiles/cmTC_8a96f.dir/build.make CMakeFiles/cmTC_8a96f.dir/build
+make[1]: Entering directory '/mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_8a96f.dir/CheckSymbolExists.c.o
+/usr/bin/cc    -fPIC    -o CMakeFiles/cmTC_8a96f.dir/CheckSymbolExists.c.o   -c /mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTC_8a96f
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_8a96f.dir/link.txt --verbose=1
+/usr/bin/cc  -fPIC     CMakeFiles/cmTC_8a96f.dir/CheckSymbolExists.c.o  -o cmTC_8a96f -rdynamic 
+CMakeFiles/cmTC_8a96f.dir/CheckSymbolExists.c.o: In function `main':
+CheckSymbolExists.c:(.text+0x1b): undefined reference to `pthread_create'
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_8a96f.dir/build.make:97: recipe for target 'cmTC_8a96f' failed
+make[1]: *** [cmTC_8a96f] Error 1
+make[1]: Leaving directory '/mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_8a96f/fast' failed
+make: *** [cmTC_8a96f/fast] Error 2
+
+File /mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_d2814/fast"
+/usr/bin/make -f CMakeFiles/cmTC_d2814.dir/build.make CMakeFiles/cmTC_d2814.dir/build
+make[1]: Entering directory '/mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_d2814.dir/CheckFunctionExists.c.o
+/usr/bin/cc    -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_d2814.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.5/Modules/CheckFunctionExists.c
+Linking C executable cmTC_d2814
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_d2814.dir/link.txt --verbose=1
+/usr/bin/cc  -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_d2814.dir/CheckFunctionExists.c.o  -o cmTC_d2814 -rdynamic -lpthreads 
+/usr/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_d2814.dir/build.make:97: recipe for target 'cmTC_d2814' failed
+make[1]: *** [cmTC_d2814] Error 1
+make[1]: Leaving directory '/mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_d2814/fast' failed
+make: *** [cmTC_d2814/fast] Error 2
+
+

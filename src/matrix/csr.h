@@ -24,7 +24,7 @@ public:
 
 	unsigned long long getScalarMegaFlops();
 	unsigned long long getVecMinMegaFlops();
-	void trackCSRTime(int method);
+	void trackCSRTime(int method, double time);
 	void printElapsedCUDATime();
 };
 

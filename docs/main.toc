@@ -4,13 +4,20 @@
 \contentsline {subsection}{Problem definition}{6}
 \contentsline {subsection}{Performance analysis}{7}
 \contentsline {subsection}{CPU vs GPU}{7}
-\contentsline {section}{Procedures}{7}
-\contentsline {subsection}{Parsing}{8}
-\contentsline {subsection}{Average non-zero deviation}{9}
-\contentsline {subsection}{OpenMP}{9}
-\contentsline {section}{Solution Design}{9}
-\contentsline {section}{Results \& Discussion}{9}
-\contentsline {section}{Conclusions}{10}
-\contentsline {section}{Appendices}{12}
-\contentsline {subsection}{Source Code}{13}
-\contentsline {subsection}{Doxygen Documentation}{13}
+\contentsline {subsection}{Crescent}{8}
+\contentsline {section}{Design Specification}{9}
+\contentsline {subsection}{Solution}{9}
+\contentsline {subsection}{Standards}{9}
+\contentsline {section}{Test Plan}{10}
+\contentsline {section}{Procedures}{11}
+\contentsline {subsection}{Parsing}{11}
+\contentsline {subsection}{OpenMP}{12}
+\contentsline {subsection}{CUDA}{14}
+\contentsline {section}{Results \& Discussion}{17}
+\contentsline {subsection}{CSR \& Ellpack}{17}
+\contentsline {subsection}{OpenMP \& CUDA}{18}
+\contentsline {section}{Conclusions}{19}
+\contentsline {section}{Appendices}{21}
+\contentsline {subsection}{Project Plan}{22}
+\contentsline {subsection}{Class Diagram}{22}
+\contentsline {subsection}{Source Code}{22}

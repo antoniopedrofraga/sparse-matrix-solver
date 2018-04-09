@@ -25,6 +25,7 @@ public:
 	int getRows();
 	void printElapsedTime();
 	void trackTime();
+	void trackTime(double time);
 	void resetResults();
 	void initVectors();
 

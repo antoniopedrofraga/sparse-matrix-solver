@@ -51,9 +51,10 @@ double * readArray(std::string filename) {
 
 bool equalSolution(double * &b, double * &y, int &m) {
 	for (int i = 0; i < m; ++i) {
-		if (fabs(b[i] - y[i]) > 1.e-05) {
+		if (fabs(b[i] - y[i]) > 1.e-03) {
 			std::cout << "At i = " << i << " -> " << b[i] << " vs " << y[i] << std::endl;
 			std::cout << "False" << std::endl;
+			return false;
 		}
 	}
 	return true;

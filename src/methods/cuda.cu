@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cuda.h>
 #include <cuda_runtime_api.h>
+#include <helper_timer.h>
 
 
 #include "../matrix/matrix.h"
@@ -20,6 +21,8 @@ void cudaCheckError(int line) {
 		printf("Cuda failure %s:%d: '%s'\n", __FILE__, line, cudaGetErrorString(e));
 	}
 }
+
+
 
 __global__ void scalarCSR(int * m, int * irp, int * ja, double * as, double * x, double * y) {
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -158,6 +161,9 @@ void solveCuda(IOmanager * io, std::string path, CSR * &csr, Ellpack * &ellpack)
 	int m = csr->getRows();
 	int n = csr->getCols();
 	int warp_size = 32, *d_warp_size;
+	
+	StopWatchInterface* timer = 0;
+	sdkCreateTimer(&timer);
 
 	getBlockNumbers(m, warp_size);
 	const int shmem_size = vm_thr_block * sizeof(double);
@@ -178,27 +184,39 @@ void solveCuda(IOmanager * io, std::string path, CSR * &csr, Ellpack * &ellpack)
 	cudaMemcpy(d_warp_size, &warp_size, sizeof(int), cudaMemcpyHostToDevice);
 	cudaCheckError(__LINE__);
 
-	for (int k = 0; k < NR_RUNS + 1; ++k) {
+	for (int k = 0; k < NR_RUNS + 2; ++k) {
 		if (csr->fitsInMemory()) {
-			if (k != 0) csr->trackCSRTime(SCALAR);
+
+			timer->reset();
+			timer->start();
 			scalarCSR<<<n_blocks_scalar, scalar_thr_block>>>(rows, csr_irp, csr_ja, csr_as, csr_x, csr_y);
 			cudaDeviceSynchronize();
-			if (k != 0) csr->trackCSRTime(SCALAR);
+			timer->stop();
+			csr->trackCSRTime(SCALAR, timer->getTime());
+			timer->reset();
+
 			cudaMemset(csr_y, 0.0, sizeof(double) * m);
 			cudaCheckError(__LINE__);
 
-			if (k != 0) csr->trackCSRTime(VECTOR_MINING);
+			timer->reset();
+			timer->start();
 			vectorMiningCSR<<<n_blocks_vm, vm_thr_block, shmem_size>>>(rows, d_warp_size, csr_irp, csr_ja, csr_as, csr_x, csr_y);
 			cudaDeviceSynchronize();
-			if (k != 0) csr->trackCSRTime(VECTOR_MINING);
+			timer->stop();
+			csr->trackCSRTime(VECTOR_MINING, timer->getTime());
+			timer->reset();
 			cudaCheckError(__LINE__);
 		}
 		
 		if (ellpack->fitsInMemory()) {
-			if (k != 0) ellpack->trackTime();
+			timer->reset();
+			timer->start();
 			scalarEllpack<<<n_blocks_scalar, scalar_thr_block>>>(rows, ellpack_ja, ellpack_as, ellpack_x, ellpack_y, maxnz);
 			cudaDeviceSynchronize();
-			if (k != 0) ellpack->trackTime();
+			timer->stop();
+			ellpack->trackTime(timer->getTime());
+			timer->reset();
+
 			cudaCheckError(__LINE__);
 		}
 

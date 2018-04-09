@@ -85,19 +85,12 @@ unsigned long long CSR::getVecMinMegaFlops() {
 	return 2.0 * (unsigned long long)getnz() / ((double)this->cuda_times_csr.second / (unsigned long long)this->measures) / 1000.0;
 }
 
-void CSR::trackCSRTime(int method) {
-	if (this->measuring == false) {
-		this->start = omp_get_wtime() * 1000;
-		this->measuring = true;
-	} else {
-		this->done = omp_get_wtime() * 1000;
-		if (method == SCALAR) {
-			this->cuda_times_csr.first += done - start;
-			this->measures++;
-		} else if (method == VECTOR_MINING) {
-			this->cuda_times_csr.second += done - start;
-		}
-		this->measuring = false;
+void CSR::trackCSRTime(int method, double time) {
+	if (method == SCALAR) {
+		this->cuda_times_csr.first += time;
+		this->measures++;
+	} else if (method == VECTOR_MINING) {
+		this->cuda_times_csr.second += time;
 	}
 }
 

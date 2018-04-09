@@ -103,6 +103,11 @@ void Matrix::trackTime() {
 	}
 }
 
+void Matrix::trackTime(double time) {
+	this->elapsed_time += time;
+	this->measures++;
+}
+
 bool Matrix::fitsInMemory() {
 	return this->fits_in_memory;
 }
