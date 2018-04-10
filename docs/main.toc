@@ -15,9 +15,8 @@
 \contentsline {subsection}{CUDA}{14}
 \contentsline {section}{Results \& Discussion}{17}
 \contentsline {subsection}{CSR \& Ellpack}{17}
-\contentsline {subsection}{OpenMP \& CUDA}{18}
-\contentsline {section}{Conclusions}{19}
-\contentsline {section}{Appendices}{21}
-\contentsline {subsection}{Project Plan}{22}
-\contentsline {subsection}{Class Diagram}{22}
-\contentsline {subsection}{Source Code}{22}
+\contentsline {subsection}{OpenMP \& CUDA}{19}
+\contentsline {section}{Conclusions}{21}
+\contentsline {section}{Appendices}{23}
+\contentsline {subsection}{Project Plan}{23}
+\contentsline {subsection}{Class Diagram}{24}

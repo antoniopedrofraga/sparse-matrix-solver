@@ -1,3 +1,0 @@
-/mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/edit_cache.dir
-/mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/rebuild_cache.dir
-/mnt/7AAA6049AA60044B/GitHub/sparse-matrix-solver/CMakeFiles/bin/solver.dir

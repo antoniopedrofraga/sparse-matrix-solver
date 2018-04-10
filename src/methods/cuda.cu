@@ -22,8 +22,6 @@ void cudaCheckError(int line) {
 	}
 }
 
-
-
 __global__ void scalarCSR(int * m, int * irp, int * ja, double * as, double * x, double * y) {
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 	if (i < *m) {
@@ -35,8 +33,16 @@ __global__ void scalarCSR(int * m, int * irp, int * ja, double * as, double * x,
 	}
 }
 
+__device__ void warpReduce(volatile double *sdata, int &tid, int &lane, int &warp_size) {
+	if (warp_size == 32) { if (lane < 16) { sdata[tid] += sdata[tid + 16]; } }
+	if (lane < 8) { sdata[tid] += sdata[tid + 8]; }
+	if (lane < 4) { sdata[tid] += sdata[tid + 4]; }
+	if (lane < 2) { sdata[tid] += sdata[tid + 2]; }
+	if (lane < 1) { sdata[tid] += sdata[tid + 1]; }
+}
+
 __global__ void vectorMiningCSR(int * m, int * d_warp_size, int * irp, int * ja, double * as, double * x, double * y) {
-	extern __shared__ volatile double sdata[];
+	extern __shared__ double sdata[];
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 	int tid = threadIdx.x;
 	int warp_size = *d_warp_size;
@@ -51,11 +57,7 @@ __global__ void vectorMiningCSR(int * m, int * d_warp_size, int * irp, int * ja,
 		for (int j = irp[row] + lane ; j < irp[row + 1]; j += warp_size)
 			sdata[tid] += as[j] * x[ja[j]];
 
-		if (warp_size == 32) { if (lane < 16) { sdata[tid] += sdata[tid + 16]; } }
-		if (lane < 8) { sdata[tid] += sdata[tid + 8]; }
-		if (lane < 4) { sdata[tid] += sdata[tid + 4]; }
-		if (lane < 2) { sdata[tid] += sdata[tid + 2]; }
-		if (lane < 1) { sdata[tid] += sdata[tid + 1]; }
+		warpReduce(sdata, tid, lane, warp_size);
 
 		if (lane == 0)
 			y[row] += sdata[tid];
@@ -161,7 +163,6 @@ void solveCuda(IOmanager * io, std::string path, CSR * &csr, Ellpack * &ellpack)
 	int m = csr->getRows();
 	int n = csr->getCols();
 	int warp_size = 32, *d_warp_size;
-	
 	StopWatchInterface* timer = 0;
 	sdkCreateTimer(&timer);
 
@@ -184,24 +185,18 @@ void solveCuda(IOmanager * io, std::string path, CSR * &csr, Ellpack * &ellpack)
 	cudaMemcpy(d_warp_size, &warp_size, sizeof(int), cudaMemcpyHostToDevice);
 	cudaCheckError(__LINE__);
 
-	for (int k = 0; k < NR_RUNS + 2; ++k) {
+	for (int k = 0; k < NR_RUNS + 1; ++k) {
 		if (csr->fitsInMemory()) {
-
-			timer->reset();
 			timer->start();
 			scalarCSR<<<n_blocks_scalar, scalar_thr_block>>>(rows, csr_irp, csr_ja, csr_as, csr_x, csr_y);
-			cudaDeviceSynchronize();
 			timer->stop();
 			csr->trackCSRTime(SCALAR, timer->getTime());
 			timer->reset();
-
 			cudaMemset(csr_y, 0.0, sizeof(double) * m);
 			cudaCheckError(__LINE__);
 
-			timer->reset();
 			timer->start();
 			vectorMiningCSR<<<n_blocks_vm, vm_thr_block, shmem_size>>>(rows, d_warp_size, csr_irp, csr_ja, csr_as, csr_x, csr_y);
-			cudaDeviceSynchronize();
 			timer->stop();
 			csr->trackCSRTime(VECTOR_MINING, timer->getTime());
 			timer->reset();
@@ -209,14 +204,11 @@ void solveCuda(IOmanager * io, std::string path, CSR * &csr, Ellpack * &ellpack)
 		}
 		
 		if (ellpack->fitsInMemory()) {
-			timer->reset();
 			timer->start();
 			scalarEllpack<<<n_blocks_scalar, scalar_thr_block>>>(rows, ellpack_ja, ellpack_as, ellpack_x, ellpack_y, maxnz);
-			cudaDeviceSynchronize();
 			timer->stop();
 			ellpack->trackTime(timer->getTime());
 			timer->reset();
-
 			cudaCheckError(__LINE__);
 		}
 

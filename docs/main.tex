@@ -132,7 +132,7 @@
 \null\vspace{\fill}
 \begin{abstract}
 \normalsize
-The product of a sparse matrix and a vector was calculated both in parallel and sequentially. The parallel procedure was executed with two different technologies, Open Multi-Processing and Compute Unified Device Architecture. Sparse matrices were stored in two different formats, Compressed Sparse Row and Ellpack. It was seen that the two formats were adequate for different types of matrices. Different procedures produced different effects, those effects were discussed and studied.
+The product of a sparse matrix and a vector was calculated both in parallel and sequentially. The parallel procedure was executed with two different technologies, Open Multi-Processing and Compute Unified Device Architecture. Sparse matrices were stored in two different formats, Compressed Sparse Row and Ellpack. It was seen that the two formats were adequate for matrices with a balanced number of non-zero values per row. Different procedures produced different effects, those effects were discussed and studied.
 \end{abstract}
 \vspace{\fill}
 \thispagestyle{empty}
@@ -540,7 +540,7 @@ __global__ void scalarCSR(int * m, int * irp, int * ja, double * as, double * x,
 
 \end{lstlisting}
 
-and the the memory access pattern can be described as follows, where the number in the iterations arrays indicates the row to be accessed, 
+and the memory access pattern can be described as follows, where the number in the iterations arrays indicates the row to be accessed, 
 
 \begin{center}
 \textit{irp}  =   
@@ -699,7 +699,7 @@ $
 \subsection*{CSR \& Ellpack}
 \addcontentsline{toc}{subsection}{CSR \& Ellpack}
 
-\par By taking OpenMP as an example, it could be seen that by having matrices with a very attenuated number of non-zero values per row, the performance of both formats could increase at a similar ratio when the number of threads was increased.
+\par By taking OpenMP as an example, it could be seen that  having matrices with a very attenuated number of non-zero values per row, caused an increasing performance of both formats at a similar ratio when the number of threads was increased.
 
 \begin{figure}[!htb]
 \centering
@@ -715,31 +715,96 @@ $
 \end{minipage}
 \end{figure}
 
-By observing \textbf{figure 2}, it is possible to observe that this phenomenon occurs with matrix \textit{ML\_ Laplace}, a matrix with $1.45 $\% of average non-zero deviation. But by analysing \textbf{figure 3}, one can determine that such behaviour is not true for matrices with a larger value of \textit{average non-zero deviation} per row. One example of this scenario is matrix \textit{cant}, with $20.2$ \% of this value.
+By observing \textbf{figure 2}, it is possible to observe that this phenomenon occurs with matrix \textit{ML\_ Laplace}, a matrix with $1.45 $\% of average non-zero deviation. But by analysing \textbf{figure 3}, one can determine that such behaviour is not true for matrices with a larger value of \textit{non-zero deviation} per row. One example of this scenario is matrix \textit{cant}, with $20.2$ \% of this value.
 
 \begin{figure}[!htb]
 \centering
-\includegraphics[width=.5\linewidth]{OMP_1M.png}
-\captionof{figure}{1M (60.12\% of nz deviation).}
+\begin{minipage}{.5\textwidth}
+	\centering
+	\includegraphics[width=.8\linewidth]{OMP_1M.png}
+	\captionof{figure}{1M (60.12\% of nz deviation).}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+	\centering
+  	\includegraphics[width=.8\linewidth]{OMP_cage4.png}
+	\captionof{figure}{OpenMP results of Cage\_ 4.}
+\end{minipage}
 \end{figure}
 
-\par This behaviour is even more radical when dealing with matrices with a higher deviation. The matrix which results can be seen at \textbf{figure 4}, not only has a high deviation of non-zero values per row, but the number of elements to be processed is significantly huge. This is a major overhead for the \textit{Ellpack} format, since multiplications by zero are performed every time a row does not have the maximum number of \textit{non-zero} values.
+\par This behaviour is even more radical when dealing with matrices with a higher deviation. The matrix which results can be seen at \textbf{figure 4}, not only has a high deviation of non-zero values per row, but the number of elements to be processed is significantly large. This is a major overhead for the \textit{Ellpack} format, since multiplications by zero are performed every time a row does not have the maximum number of \textit{non-zero} values.
+\par The matrix \textit{dc1.mtx} generated a \textit{bad allocation} exception when converted to the Ellpack format. The error message was declared as follows, 
+
+\begin{lstlisting}[style=tests]
+terminate called after throwing an instance of 'std::bad_alloc'
+what():  std::bad_alloc
+\end{lstlisting}
+
+. This matrix contained a maximum number of $114190$ entries in a row. It is known that this matrix has $116835$ rows. Knowing that all values were stored as \textit{double}, and assuming that a double contains \textbf{64} bits, it is possible to calculate the amount of storage that was being allocated. Considering the Ellpack format, this matrix would be representable in memory in,
+
+\begin{center}
+	$ 114190 \times 116835 \times 64 $ bits 
+\end{center}
+
+, which is equivalent to,
+
+\begin{center}
+	\Large	
+	$ \frac{114190 \times 116835 \times 64}{8 \times 10^9} \approx 106.73$ 
+	\normalsize
+	GigaBytes 
+\end{center}
+
+\par This is the amount of storage required to represent the \textit{as} (values) matrix. To this amount, a similar calculation would be summed, representing the \textit{ja} (indexes) matrix. Since the indexes are stored in \textbf{32} bits integers, half of \textbf{64}, we can multiply this value by $1.5$ in order to obtain the correct result.
+\begin{center}
+	\Large	
+	$ 106.73 \times 1.5 \approx 160 $ 
+	\normalsize
+	GigaBytes 
+\end{center}
+\par It is clear that this matrix couldn't fit in memory, and that was the cause of a \textbf{bad allocation} exception. This problem was not declared in any of the other matrices.
 
 \subsection*{OpenMP \& CUDA}
 \addcontentsline{toc}{subsection}{OpenMP \& CUDA}
 
-\par Parallelization becomes a overhead when one tries to launch threads that will be idle. Such behaviour can be easily seen with small matrices. By analysing \textbf{figure 5}, one can deduce that the number of calculations to be done within this matrix is relatively low. Hence, the performance of parallelization decreases when the number of threads is increased. The overhead of launching threads becomes obvious in these situations. 
-\par 
+\par Parallelization becomes a overhead when one tries to launch threads that will be idle. Such behaviour can be easily seen with small matrices. By analysing \textbf{figure 5}, one can deduce that the number of calculations to be done within this matrix is relatively low. Hence, the performance of parallelization decreases when the number of threads is increased. The overhead of launching threads becomes obvious in these situations. Notice that the referred matrix has 9 rows, 9 columns and 49 non-zero values.
+\par As expected, the OpenMP technology offered a major advantage over the serial implementation. The chart on \textbf{figure 6}, provides a collection of the best performances taken from the execution of a piece of code powered by this technology. It can be clearly seen, that the obtained \textit{Speed-Up} is, in some cases, more than \textbf{8}. Notice that this chart was generated by taking the best execution time with programs running from 2 to 16 threads. Thereby, it's considering the smaller execution time from those runs. 
+\par It is also important to mention that these charts were not plotted with every matrix, in order to provide a good perception of what results were obtained.
+
+
 \begin{figure}[!htb]
 \centering
-\includegraphics[width=.5\linewidth]{OMP_cage4.png}
-\captionof{figure}{OpenMP results of Cage\_ 4, 9 rows, 9 columns, 49 non-zero values.}
+\begin{minipage}{.45\textwidth}
+	\centering
+	\includegraphics[width=.8\linewidth]{openmp.png}
+	\captionof{figure}{Comparison between OpenMP \newline and Sequential efficiency.}
+\end{minipage}%
+\begin{minipage}{.45\textwidth}
+	\centering
+  	\includegraphics[width=.8\linewidth]{csrcuda.png}
+	\captionof{figure}{CSR efficiency with results from the several methods.}
+\end{minipage}
 \end{figure}
+
+\par By observing \textbf{Figure 7}, it can be seen that solving the problem with CUDA offers good results. The \textit{Vector Strip-Mining} approach with matrices in the CSR format achieved better results that the ones obtained with the \textit{Scalar} approach. As explained in the \textbf{Procedures} section, this methods memory access pattern is improved when compared to the pattern in the \textit{Scalar} approach.
+\par The naive solution of parallelization suffers from a poor memory access pattern, which results in low bandwidth utilization. The values from the \textit{as} (column indexes) and \textit{ja} (values) array are stored contiguously. The context switching between threads within the same warp provides memory accesses in different memory segments. Hence, memory transactions between the several levels of memory are made. 
+\par On other hand, the first method offers a higher level of coalescing. Having rows with less than \textbf{32} entries would result in idling threads, that would be one drawback in this implementation.
+
+\begin{figure}[!htb]
+ \centering
+  \includegraphics[width=.4\linewidth]{ellpackcuda.png}
+  \captionof{figure}{Ellpack efficiency with results from the several methods.}
+\end{figure}
+
+\par CUDA results for the Ellpack format obtained a better results when compared to the other methods, as expected. This results can be consulted on \textbf{figure 8}. The ability of launching a larger number of threads in a GPU device is an obvious advantage. The number of warps concurrently running varies from device to device. But it is safe to assume that it is a significantly larger number than the number of threads running in a CPU. Specially in this kind of problems, where the amount of data to be processed is substantial.
+
 
 \pagebreak
 \section*{Conclusions}
 \addcontentsline{toc}{section}{Conclusions}
 
+\par In conclusion, the CSR format offers a better solution regarding to \textbf{memory complexity}. In some cases, it is impossible to store huge matrices in the Ellpack format. This problem becomes more perceivable when the number of non-zero values per row is closer to the number of columns. We can also assume that computations between both formats becomes similar when dealing with matrices with a smaller deviation of non-zero values per row.
+\par The advantages of parallelization is clear when comparing the results of the sequential and parallel approaches. The OpenMP and CUDA technologies offer different levels of parallelization. Because CUDA is a technology that interacts with GPU devices, the amount of launched threads is larger than the one seen with the OpenMP technology.
+\par It can also be concluded than memory can be a bottleneck in these types of parallelization. The development of two approaches, Scalar and Vector-Strip Mining, was a good indicator of these situations. The performance of the Scalar method, a naive solution to this problem, is rarely competitive with different approaches. Both developed kernels had the possibility of having idle threads, due to the variations of \textit{non-zero} values per row. However, the solution of using warps in order to produce the results for each row seems more efficient, since it consists of having consecutive threads accessing consecutive memory locations. It is also required to keep in mind that this strategy wouldn't be a good solution if a matrix contained less than 32 entries per row. In this scenario, this approach would be maximizing the number of idling threads.
  
 
 %-------------------------------------------------------------------------------
@@ -779,18 +844,24 @@ Brendan Greg, \textit{CPU Flame Graphs}, Available at: <\url{http://www.brendang
 \section*{Appendices}
 \addcontentsline{toc}{section}{Appendices}
 
-\newpage
-
 \subsection*{Project Plan}
 \addcontentsline{toc}{subsection}{Project Plan}
 
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=1.0\linewidth]{pp.png}
+\end{figure}
+
+
+\pagebreak
 
 \subsection*{Class Diagram}
 \addcontentsline{toc}{subsection}{Class Diagram}
 
-
-\subsection*{Source Code}
-\addcontentsline{toc}{subsection}{Source Code}
+\begin{figure}[!htb]
+\centering
+\includegraphics[height=1.2\linewidth]{class_diagram.png}
+\end{figure}
 
 \end{document}
 

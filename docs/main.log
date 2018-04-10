@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.11.3)  9 APR 2018 18:06
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.11.3)  10 APR 2018 02:31
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1725,44 +1725,75 @@ File: OMP_cant.png Graphic file (type png)
  <use OMP_cant.png>
 Package pdftex.def Info: OMP_cant.png used on input line 713.
 (pdftex.def)             Requested size: 181.18784pt x 135.88637pt.
- [17 <./OMP_ML_Laplace.png> <./OMP_cant.png>] <OMP_1M.png, id=75, 481.8pt x 361
-.35pt>
+
+<OMP_1M.png, id=70, 481.8pt x 361.35pt>
 File: OMP_1M.png Graphic file (type png)
+ <use OMP_1M.png>
+Package pdftex.def Info: OMP_1M.png used on input line 724.
+(pdftex.def)             Requested size: 181.18784pt x 135.88637pt.
 
-<use OMP_1M.png>
-Package pdftex.def Info: OMP_1M.png used on input line 722.
-(pdftex.def)             Requested size: 226.48395pt x 169.86209pt.
- <OMP_cage4.png, id=76, 481.8pt x 361.35pt>
+<OMP_cage4.png, id=71, 481.8pt x 361.35pt>
 File: OMP_cage4.png Graphic file (type png)
+ <use OMP_cage4.png>
+Package pdftex.def Info: OMP_cage4.png used on input line 729.
+(pdftex.def)             Requested size: 181.18784pt x 135.88637pt.
+ [17 <./OMP_ML_Laplace.png> <./OMP_cant.png>] [18 <./OMP_1M.png> <./OMP_cage4.p
+ng>]
+<openmp.png, id=82, 481.8pt x 361.35pt>
+File: openmp.png Graphic file (type png)
+ <use openmp.png>
+Package pdftex.def Info: openmp.png used on input line 778.
+(pdftex.def)             Requested size: 163.06795pt x 122.30048pt.
 
-<use OMP_cage4.png>
-Package pdftex.def Info: OMP_cage4.png used on input line 735.
-(pdftex.def)             Requested size: 226.48395pt x 169.86209pt.
- [18 <./OMP_1M.png>] [19 <./OMP_cage4.png>] [20] [21]
+<csrcuda.png, id=83, 481.8pt x 361.35pt>
+File: csrcuda.png Graphic file (type png)
+ <use csrcuda.png>
+Package pdftex.def Info: csrcuda.png used on input line 783.
+(pdftex.def)             Requested size: 163.06795pt x 122.30048pt.
+ [19 <./openmp.png> <./csrcuda.png>] <ellpackcuda.png, id=90, 481.8pt x 361.35p
+t>
+File: ellpackcuda.png Graphic file (type png)
+
+<use ellpackcuda.png>
+Package pdftex.def Info: ellpackcuda.png used on input line 794.
+(pdftex.def)             Requested size: 181.18439pt x 135.88637pt.
+ [20 <./ellpackcuda.png>] [21] [22]
+<pp.png, id=101, 1090.0725pt x 121.45375pt>
+File: pp.png Graphic file (type png)
+ <use pp.png>
+Package pdftex.def Info: pp.png used on input line 852.
+(pdftex.def)             Requested size: 452.9679pt x 50.46907pt.
+ [23 <./pp.png>]
+<class_diagram.png, id=106, 418.56375pt x 536.75531pt>
+File: class_diagram.png Graphic file (type png)
+ <use class_diagram.png>
+Package pdftex.def Info: class_diagram.png used on input line 863.
+(pdftex.def)             Requested size: 423.8701pt x 543.56009pt.
+
 
 AED: lastpage setting LastPage
-[22] (./main.aux) ) 
+[24 <./class_diagram.png (PNG copy)>] (./main.aux) ) 
 Here is how much of TeX's memory you used:
- 12560 strings out of 494910
- 178188 string characters out of 6179836
+ 12627 strings out of 494910
+ 179010 string characters out of 6179836
  444049 words of memory out of 5000000
- 15262 multiletter control sequences out of 15000+600000
- 151350 words of font info for 303 fonts, out of 8000000 for 9000
+ 15302 multiletter control sequences out of 15000+600000
+ 153379 words of font info for 320 fonts, out of 8000000 for 9000
  36 hyphenation exceptions out of 8191
  42i,12n,58p,1063b,1770s stack positions out of 5000i,500n,10000p,200000b,80000s
- </home/antonio/.texmf-var/fonts/pk/ljfour/jknappen/ec/ectt1
-200.600pk> </home/antonio/.texmf-var/fonts/pk/ljfour/jknappen/ec/ectt1095.600pk
->{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texlive
-/texmf-dist/fonts/type1/public/fourier/fourier-mex.pfb></usr/share/texlive/texm
-f-dist/fonts/type1/public/fourier/fourier-ms.pfb></usr/share/texlive/texmf-dist
-/fonts/type1/adobe/utopia/putb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1
-/adobe/utopia/putbi8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/adobe/utop
-ia/putr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/adobe/utopia/putri8a.p
-fb>
-Output written on main.pdf (22 pages, 247020 bytes).
+ </home/antonio/.texmf-var/
+fonts/pk/ljfour/jknappen/ec/ectt1200.600pk> </home/antonio/.texmf-var/fonts/pk/
+ljfour/jknappen/ec/ectt1095.600pk>{/usr/share/texlive/texmf-dist/fonts/enc/dvip
+s/base/8r.enc}</usr/share/texlive/texmf-dist/fonts/type1/public/fourier/fourier
+-mex.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/fourier/fourier-ms.p
+fb></usr/share/texlive/texmf-dist/fonts/type1/adobe/utopia/putb8a.pfb></usr/sha
+re/texlive/texmf-dist/fonts/type1/adobe/utopia/putbi8a.pfb></usr/share/texlive/
+texmf-dist/fonts/type1/adobe/utopia/putr8a.pfb></usr/share/texlive/texmf-dist/f
+onts/type1/adobe/utopia/putri8a.pfb>
+Output written on main.pdf (24 pages, 374860 bytes).
 PDF statistics:
- 243 PDF objects out of 1000 (max. 8388607)
- 78 compressed objects within 1 object stream
+ 260 PDF objects out of 1000 (max. 8388607)
+ 82 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 42532 words of extra memory for PDF output out of 42996 (max. 10000000)
+ 42557 words of extra memory for PDF output out of 42996 (max. 10000000)
 
